@@ -1,7 +1,6 @@
 /* eslint-disable no-useless-escape */
 const fs = require("fs");
 const dotenv = require("dotenv");
-const path = require("path");
 const util = require("util");
 const {TDX_TOKEN, TDX_SECRET} = require("./constants");
 const writeFile = util.promisify(fs.writeFile);
@@ -154,14 +153,6 @@ function createFile(filepath) {
   });
 }
 
-function getEnvPath(tdxcliPath, pathPrefix) {
-  const normPrefix = path.normalize(pathPrefix);
-  const normIdx = tdxcliPath.indexOf(normPrefix);
-  if (normIdx > 0) {
-    return path.join(tdxcliPath.slice(0, normIdx), ".env");
-  } else return "./.env";
-}
-
 module.exports = {
   base64ToJson,
   jsonToBase64,
@@ -183,5 +174,4 @@ module.exports = {
   readJsonFromFile,
   numberToString,
   createFile,
-  getEnvPath,
 };

@@ -7,7 +7,7 @@ function listAliases(configs) {
   return Object.keys(configs);
 }
 
-async function copyAliasConfig({appConfig, alias, aliasName, configFileName}) {
+async function copyAliasConfig({appConfig, alias, aliasName, configPath}) {
   const aliases = listAliases(appConfig.tdxConfigs);
   if (!checkValidAlias(aliasName)) {
     throw Error("Invalid alias name.");
@@ -18,23 +18,23 @@ async function copyAliasConfig({appConfig, alias, aliasName, configFileName}) {
   } else {
     return modifyAliasConfig({
       appConfig,
-      modifyAlias: aliasName,
+      aliasName,
       aliasConfig: appConfig.tdxConfigs[alias],
-      configFileName,
+      configPath,
     });
   }
 }
 
-async function modifyAliasConfig({appConfig, modifyAlias, aliasConfig, configFileName}) {
-  appConfig.tdxConfigs[modifyAlias] = aliasConfig;
-  return writeJsonToFile(appConfig, configFileName);
+async function modifyAliasConfig({appConfig, aliasName, aliasConfig, configPath}) {
+  appConfig.tdxConfigs[aliasName] = aliasConfig;
+  return writeJsonToFile(appConfig, configPath);
 }
 
-async function removeAliasConfig({appConfig, aliasName, configFileName}) {
-  if (!(aliasName in appConfig.tdxConfigs)) throw Error("Alias configuration deosn't exist.");
+async function removeAliasConfig({appConfig, aliasName, configPath}) {
+  if (!(aliasName in appConfig.tdxConfigs)) throw Error("Alias configuration doesn't exist.");
 
   delete appConfig.tdxConfigs[aliasName];
-  return writeJsonToFile(appConfig, configFileName);
+  return writeJsonToFile(appConfig, configPath);
 }
 
 module.exports = {

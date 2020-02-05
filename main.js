@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 "use strict";
 
-const packageJson = require("./package.json");
+const path = require("path");
 const appConfig = require("./config.json");
 const {TDX_CURRENT_ALIAS} = require("./src/constants");
 const {
@@ -18,7 +18,6 @@ const {
   readJsonFromFile,
   numberToString,
   createFile,
-  getEnvPath,
 } = require("./src/utils");
 const {
   listAliases,
@@ -28,7 +27,9 @@ const {
 } = require("./src/alias");
 const CommandHandler = require("./src");
 
-const envPath = getEnvPath(process.argv[1], packageJson.bin.tdxcli);
+const envPath = path.join(__dirname, ".env");
+const configPath = path.join(__dirname, "config.json");
+
 require("dotenv").config({path: envPath});
 
 async function argumentHandler(argv) {
@@ -56,6 +57,7 @@ async function run(commandName, commandProps) {
   const {
     id, secret, type, command, filepath,
     aliasName, configJson, instanceId, databotId,
+    apiArgs, apiArgsStringify,
   } = commandProps;
 
   try {
@@ -106,11 +108,7 @@ async function run(commandName, commandProps) {
         };
         break;
       case "runapi":
-        output = await commandHandler.handleRunApi({
-          command,
-          apiArgs: commandProps.apiArgs,
-          apiArgsStringify: commandProps.apiArgsStringify,
-        });
+        output = await commandHandler.handleRunApi({command, apiArgs, apiArgsStringify});
         output = JSON.stringify(output, null, 2);
         break;
       case "download":
@@ -121,31 +119,17 @@ async function run(commandName, commandProps) {
         output = "OK";
         break;
       case "copyalias":
-        await copyAliasConfig({
-          appConfig,
-          alias,
-          aliasName,
-          configFileName: "./config.json",
-        });
+        await copyAliasConfig({appConfig, alias, aliasName, configPath});
         output = "OK";
         break;
       case "modifyalias":
         const aliasConfig = await readJsonFromFile(configJson);
-        await modifyAliasConfig({
-          appConfig,
-          modifyAlias: aliasName,
-          aliasConfig,
-          configFileName: "./config.json",
-        });
+        await modifyAliasConfig({appConfig, aliasName, aliasConfig, configPath});
         output = "OK";
         break;
       case "removealias":
         if (alias === aliasName) throw Error("Can't remove the running alias.");
-        await removeAliasConfig({
-          appConfig,
-          aliasName,
-          configFileName: "./config.json",
-        });
+        await removeAliasConfig({appConfig, aliasName, configPath});
         output = "OK";
         break;
       case "abortdatabot":
@@ -186,6 +170,7 @@ const argv = require("yargs")
   .command("abortdatabot <instanceid>", "Aborts a databot instance", {}, argumentHandler)
   .command("stopdatabot <instanceid>", "Stops a databot instance", {}, argumentHandler)
   .command("startdatabot <databotid> <configjson>", "Starts a databot instance", {}, argumentHandler)
+  .command("databot <command> <id> [configjson]", "Starts, stops or aborts a databot instance", {}, argumentHandler)
   .demandCommand(1, 1, "You need at least one command to run.")
   .option("a", {
     alias: "alias",
