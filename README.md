@@ -1,10 +1,10 @@
-# nqm-tdx-api-client
+# nqm-tdx-terminal-cli
 Nquiringminds TDX API client application
 
 ## Install
 The best use of tdxcli tool is to install it with npm globally as follows:
 ```bash
-npm i -g nqm-tdx-api-client
+npm i -g nqm-tdx-terminal-cli
 ```
 The client app can be accessed by running the command ```tdxcli```.
 
