@@ -1,5 +1,5 @@
 {
-  "name": "nqm-tdx-api-client",
+  "name": "nqm-tdx-api-cli",
   "version": "0.2.1",
   "description": "TDX API client",
   "main": "main.js",
@@ -31,12 +31,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mereacre/nqm-tdx-console.git"
+    "url": "git+https://github.com/nqminds/nqm-tdx-api-cli.git"
   },
   "author": "Alexandru Mereacre",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mereacre/nqm-tdx-console/issues"
+    "url": "https://github.com/nqminds/nqm-tdx-api-cli/issues"
   },
-  "homepage": "https://github.com/mereacre/nqm-tdx-console#readme"
+  "homepage": "https://github.com/nqminds/nqm-tdx-api-cli#readme"
 }
