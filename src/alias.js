@@ -9,7 +9,7 @@ function listAliases(configs) {
 
 async function copyAliasConfig({appConfig, alias, aliasName, configFileName}) {
   const aliases = listAliases(appConfig.tdxConfigs);
-  if (aliasName === "" || !checkValidAlias(aliasName)) {
+  if (!checkValidAlias(aliasName)) {
     throw Error("Invalid alias name.");
   }
 

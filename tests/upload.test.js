@@ -1,3 +1,4 @@
+/* eslint-disable mocha/no-global-tests */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable max-len */
 /* eslint-disable no-undef */

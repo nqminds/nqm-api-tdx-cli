@@ -1,3 +1,4 @@
+/* eslint-disable mocha/no-global-tests */
 /* eslint-disable max-len */
 /* eslint-disable no-undef */
 const utils = require("../src/utils");
@@ -149,4 +150,19 @@ test("filterListByIdentifier should return [] for []", () => {
 test("filterListByIdentifier should return {} for ['3']", () => {
   const filtered = utils.filterListByIdentifier(["3"], "@");
   expect(filtered).toEqual([]);
+});
+
+test("numberToString should return '1234554321' for 1234554321", () => {
+  const output = utils.numberToString(1234554321);
+  expect(output).toEqual("1234554321");
+});
+
+test("numberToString should return '1234554321' for '1234554321'", () => {
+  const output = utils.numberToString("1234554321");
+  expect(output).toEqual("1234554321");
+});
+
+test("numberToString should return '' for ''", () => {
+  const output = utils.numberToString("");
+  expect(output).toEqual("");
 });

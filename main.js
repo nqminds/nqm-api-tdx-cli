@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 "use strict";
-require("dotenv").config();
 
+const packageJson = require("./package.json");
 const appConfig = require("./config.json");
 const {TDX_CURRENT_ALIAS} = require("./src/constants");
 const {
@@ -16,6 +16,9 @@ const {
   filterObjectByIdentifier,
   filterListByIdentifier,
   readJsonFromFile,
+  numberToString,
+  createFile,
+  getEnvPath,
 } = require("./src/utils");
 const {
   listAliases,
@@ -23,21 +26,24 @@ const {
   modifyAliasConfig,
   removeAliasConfig,
 } = require("./src/alias");
-const CommandHandler = require("./src/command-handler");
+const CommandHandler = require("./src");
+
+const envPath = getEnvPath(process.argv[1], packageJson.bin.tdxcli);
+require("dotenv").config({path: envPath});
 
 async function argumentHandler(argv) {
   const command = argv._[0];
   const commandProps = {
-    alias: argv.alias || "",
-    id: argv.id || "",
-    secret: argv.secret || "",
-    type: argv.type || "",
-    command: argv.command || "",
-    filepath: argv.filepath || "",
-    aliasName: argv.aliasname || "",
-    configJson: argv.configjson || "",
-    instanceId: argv.instanceid || "",
-    databotId: argv.databotid || "",
+    alias: numberToString(argv.alias || ""),
+    id: numberToString(argv.id || ""),
+    secret: numberToString(argv.secret || ""),
+    type: numberToString(argv.type || ""),
+    command: numberToString(argv.command || ""),
+    filepath: numberToString(argv.filepath || ""),
+    aliasName: numberToString(argv.aliasname || ""),
+    configJson: numberToString(argv.configjson || ""),
+    instanceId: numberToString(argv.instanceid || ""),
+    databotId: numberToString(argv.databotid || ""),
     apiArgs: filterObjectByIdentifier(argv, "@"),
     apiArgsStringify: filterListByIdentifier(argv._.slice(1), "@"),
   };
@@ -52,9 +58,10 @@ async function run(commandName, commandProps) {
     aliasName, configJson, instanceId, databotId,
   } = commandProps;
 
-  if (alias === "") alias = envToAlias(process.env[TDX_CURRENT_ALIAS] || "");
-
   try {
+    await createFile(envPath);
+
+    if (alias === "") alias = envToAlias(process.env[TDX_CURRENT_ALIAS] || "");
     if (!alias) throw Error("No alias defined.");
     if (!checkValidAlias(alias)) throw Error("Wrong alias name. Only allowed [a-zA-Z0-9_]");
 
@@ -75,30 +82,28 @@ async function run(commandName, commandProps) {
       case "signin":
         await commandHandler.handleSignin(argumentSecret);
 
-        setEnv(TDX_CURRENT_ALIAS, aliasToEnv(alias));
+        setEnv({key: TDX_CURRENT_ALIAS, value: aliasToEnv(alias), envPath});
         // Store the argument secret
-        if (argumentSecret.id) setEnv(getSecretAliasName(alias), jsonToBase64(argumentSecret));
-        setEnv(getTokenAliasName(alias), commandHandler.getToken());
-        console.log("OK");
+        if (argumentSecret.id) setEnv({key: getSecretAliasName(alias), value: jsonToBase64(argumentSecret), envPath});
+        setEnv({key: getTokenAliasName(alias), value: commandHandler.getToken(), envPath});
+        output = "OK";
         break;
       case "signout":
         commandHandler.handleSignout();
-        setEnv(getTokenAliasName(alias), "");
-        setEnv(getSecretAliasName(alias), "");
+        setEnv({key: getTokenAliasName(alias), value: "", envPath});
+        setEnv({key: getSecretAliasName(alias), value: "", envPath});
         break;
       case "info":
         output = await commandHandler.handleInfo({id, type});
-        console.log(output);
         break;
       case "config":
-        console.log(tdxConfig);
+        output = tdxConfig;
         break;
       case "list":
         output = {
           default: alias,
           aliases: listAliases(appConfig.tdxConfigs),
         };
-        console.log(output);
         break;
       case "runapi":
         output = await commandHandler.handleRunApi({
@@ -106,14 +111,14 @@ async function run(commandName, commandProps) {
           apiArgs: commandProps.apiArgs,
           apiArgsStringify: commandProps.apiArgsStringify,
         });
-        console.log(JSON.stringify(output, null, 2));
+        output = JSON.stringify(output, null, 2);
         break;
       case "download":
         await commandHandler.handleDownload(id, filepath);
         break;
       case "upload":
         output = await commandHandler.handleUpload(id, filepath);
-        console.log(output);
+        output = "OK";
         break;
       case "copyalias":
         await copyAliasConfig({
@@ -122,7 +127,7 @@ async function run(commandName, commandProps) {
           aliasName,
           configFileName: "./config.json",
         });
-        console.log("OK");
+        output = "OK";
         break;
       case "modifyalias":
         const aliasConfig = await readJsonFromFile(configJson);
@@ -132,7 +137,7 @@ async function run(commandName, commandProps) {
           aliasConfig,
           configFileName: "./config.json",
         });
-        console.log("OK");
+        output = "OK";
         break;
       case "removealias":
         if (alias === aliasName) throw Error("Can't remove the running alias.");
@@ -141,22 +146,21 @@ async function run(commandName, commandProps) {
           aliasName,
           configFileName: "./config.json",
         });
-        console.log("OK");
+        output = "OK";
         break;
       case "abortdatabot":
         output = await commandHandler.handleAbortDatabot(instanceId);
-        console.log(output);
         break;
       case "stopdatabot":
         output = await commandHandler.handleStopDatabot(instanceId);
-        console.log(output);
         break;
       case "startdatabot":
         const functionPayload = await readJsonFromFile(configJson);
         output = await commandHandler.handleStartDatabot(databotId, functionPayload);
-        console.log(output);
         break;
     }
+
+    if (output) console.log(output);
   } catch (error) {
     console.error(error);
     process.exit(-1);

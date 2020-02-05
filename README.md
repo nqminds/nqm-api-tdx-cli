@@ -45,7 +45,7 @@ tdxcli signin emailorsharetokenid thesecret
 ```
 The first command will open a Chromium browser window, wheares the second will do an automatic signin with the provided credentials. The obtained access token will be stored in the ```.env``` file.
 
-Initially the user has to choose an ```alias``` in order to sign into a given tdx account. The default aliases are ```nqminds``` and ```nq_m```, which correspond to ```tdx.nqminds.com``` and ```tdx.nq_m.com```, respectively .
+Initially the user has to choose an ```alias``` in order to sign into a given tdx account. The default aliases are ```nqminds``` and ```nq_m```, which correspond to ```tdx.nqminds.com``` and ```tdx.nq-m.com```, respectively .
 
 ```bash
 tdxcli signin --alias=nqminds

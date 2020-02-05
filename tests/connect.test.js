@@ -1,3 +1,4 @@
+/* eslint-disable mocha/no-global-tests */
 /* eslint-disable no-undef */
 const connect = require("../src/signin/connect");
 const TDXApi = require("@nqminds/nqm-api-tdx");

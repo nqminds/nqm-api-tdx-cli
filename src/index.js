@@ -1,4 +1,1 @@
-module.exports = function(config) {
-  "use strict";
-
-};
+module.exports = require("./command-handler");

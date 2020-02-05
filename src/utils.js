@@ -79,10 +79,6 @@ function getTdxSecrets(tdxKeys) {
   return tdxSecrets;
 }
 
-function getEnvPath(envFile = ".env") {
-  return path.resolve(process.cwd(), envFile);
-}
-
 function toEnvString(envConfig) {
   let envString = "";
 
@@ -102,8 +98,7 @@ function writeEnv(envConfig, envPath) {
   fs.writeFileSync(envPath, envString);
 }
 
-function setEnv(key, value) {
-  const envPath = getEnvPath();
+function setEnv({key, value, envPath}) {
   const envConfig = readEnv(envPath);
 
   envConfig[key] = value;
@@ -140,6 +135,33 @@ async function readJsonFromFile(fileName) {
   return JSON.parse(data);
 }
 
+function numberToString(value) {
+  if (typeof value === "number")
+    return value.toString();
+  else return value;
+}
+
+function createFile(filepath) {
+  return new Promise((resolve, reject) => {
+    fs.open(filepath, "r", (err) => {
+      if (err) {
+        fs.writeFile(filepath, "", (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      } else resolve();
+    });
+  });
+}
+
+function getEnvPath(tdxcliPath, pathPrefix) {
+  const normPrefix = path.normalize(pathPrefix);
+  const normIdx = tdxcliPath.indexOf(normPrefix);
+  if (normIdx > 0) {
+    return path.join(tdxcliPath.slice(0, normIdx), ".env");
+  } else return "./.env";
+}
+
 module.exports = {
   base64ToJson,
   jsonToBase64,
@@ -159,4 +181,7 @@ module.exports = {
   filterListByIdentifier,
   writeJsonToFile,
   readJsonFromFile,
+  numberToString,
+  createFile,
+  getEnvPath,
 };

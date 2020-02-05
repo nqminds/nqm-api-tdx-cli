@@ -20,9 +20,7 @@ async function getDatabotsIds(api) {
   return JSON.stringify(result, 0, 2);
 }
 
-async function getInfo({api, id, type}) {
-  type = type || "";
-  id = id || "";
+async function getInfo({api, id = "", type = ""}) {
   switch (type) {
     case "":
     case "account":
@@ -31,6 +29,8 @@ async function getInfo({api, id, type}) {
       return getServerFolderId(id);
     case "databotsid":
       return getDatabotsIds(api);
+    default:
+      throw Error("Unknow info type term.")
   }
 }
 
