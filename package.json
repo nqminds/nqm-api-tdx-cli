@@ -1,0 +1,42 @@
+{
+  "name": "nqm-tdx-api-client",
+  "version": "0.2.1",
+  "description": "TDX API client",
+  "main": "main.js",
+  "directories": {
+    "test": "tests"
+  },
+  "bin": {
+    "tdxcli": "./bin/tdxcli"
+  },
+  "dependencies": {
+    "@nqminds/nqm-api-tdx": "^0.9.1",
+    "@nqminds/nqm-core-utils": "^0.5.9",
+    "@nqminds/nqm-databot-utils": "^0.2.20",
+    "dotenv": "^8.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "puppeteer": "^2.0.0",
+    "yargs": "^15.1.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.3",
+    "eslint": "^5.16.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "jest": "^25.1.0",
+    "superagent": ">=3.7.0"
+  },
+  "scripts": {
+    "lint": "eslint '**/*.js'",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mereacre/nqm-tdx-console.git"
+  },
+  "author": "Alexandru Mereacre",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mereacre/nqm-tdx-console/issues"
+  },
+  "homepage": "https://github.com/mereacre/nqm-tdx-console#readme"
+}
