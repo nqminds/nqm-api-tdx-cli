@@ -1,4 +1,4 @@
-# nqm-tdx-terminal-cli
+# nqm-tdx-terminal-cli![Node.js CI](https://github.com/nqminds/nqm-tdx-terminal-cli/workflows/Node.js%20CI/badge.svg)
 Nquiringminds TDX API client application
 
 ## Install
