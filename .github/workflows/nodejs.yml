@@ -1,6 +1,8 @@
 name: Node.js CI
 
-on: release
+on:
+  release:
+    types: [created]
 
 jobs:
   build:
