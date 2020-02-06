@@ -1,0 +1,5 @@
+module.exports = {
+  TDX_CURRENT_ALIAS: "TDX_CURRENT_ALIAS",
+  TDX_TOKEN: "TDX_TOKEN",
+  TDX_SECRET: "TDX_SECRET",
+};
