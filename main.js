@@ -132,15 +132,8 @@ async function run(commandName, commandProps) {
         await removeAliasConfig({appConfig, aliasName, configPath});
         output = "OK";
         break;
-      case "abortdatabot":
-        output = await commandHandler.handleAbortDatabot(instanceId);
-        break;
-      case "stopdatabot":
-        output = await commandHandler.handleStopDatabot(instanceId);
-        break;
-      case "startdatabot":
-        const functionPayload = await readJsonFromFile(configJson);
-        output = await commandHandler.handleStartDatabot(databotId, functionPayload);
+      case "databot":
+        output = await commandHandler.handleDatabot({command, id, configJson});
         break;
     }
 
@@ -167,9 +160,6 @@ const argv = require("yargs")
   .command("copyalias <aliasname>", "Makes a copy of an existing alias configuration", {}, argumentHandler)
   .command("modifyalias <aliasname> <configjson>", "Modifies an existing alias configuration", {}, argumentHandler)
   .command("removealias <aliasname>", "Removes an existing alias configuration", {}, argumentHandler)
-  .command("abortdatabot <instanceid>", "Aborts a databot instance", {}, argumentHandler)
-  .command("stopdatabot <instanceid>", "Stops a databot instance", {}, argumentHandler)
-  .command("startdatabot <databotid> <configjson>", "Starts a databot instance", {}, argumentHandler)
   .command("databot <command> <id> [configjson]", "Starts, stops or aborts a databot instance", {}, argumentHandler)
   .demandCommand(1, 1, "You need at least one command to run.")
   .option("a", {

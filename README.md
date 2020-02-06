@@ -13,20 +13,18 @@ The client app can be accessed by running the command ```tdxcli```.
 Usage: tdxcli <command> [options]
 
 Commands:
-  tdxcli signin [id] [secret]                   Sign in to tdx
-  tdxcli signout                                Sign out of tdx
-  tdxcli info [type] [id]                       Output current account info
-  tdxcli config                                 Output tdx config
-  tdxcli list                                   List all configured aliases
-  tdxcli runapi <command>                       Run a tdx api command
-  tdxcli download <id> [filepath]               Download resource
-  tdxcli upload <id> <filepath>                 Upload resource
-  tdxcli copyalias <aliasname>                  Makes a copy of an existing alias configuration
-  tdxcli modifyalias <aliasname> <configjson>   Modifies an existing alias configuration
-  tdxcli removealias <aliasname>                Removes an existing alias configuration
-  tdxcli abortdatabot <instanceid>              Aborts a databot instance
-  tdxcli stopdatabot <instanceid>               Stops a databot instance
-  tdxcli startdatabot <databotid> <configjson>  Starts a databot instance
+  tdxcli signin [id] [secret]                  Sign in to tdx
+  tdxcli signout                               Sign out of tdx
+  tdxcli info [type] [id]                      Output current account info
+  tdxcli config                                Output tdx config
+  tdxcli list                                  List all configured aliases
+  tdxcli runapi <command>                      Run a tdx api command
+  tdxcli download <id> [filepath]              Download resource
+  tdxcli upload <id> <filepath>                Upload resource
+  tdxcli copyalias <aliasname>                 Makes a copy of an existing alias configuration
+  tdxcli modifyalias <aliasname> <configjson>  Modifies an existing alias configuration
+  tdxcli removealias <aliasname>               Removes an existing alias configuration
+  tdxcli databot <command> <id> [configjson]   Starts, stops or aborts a databot instance
 
 Options:
   -a, --alias    Alias name                                                                   [string]
@@ -208,29 +206,15 @@ tdxcli removealias aliasname
 
 The removes the ```aliasname``` from ```config.json```.
 
-## ```abortdatabot```
+## ```databot```
 Usage
 ```bash
-tdxcli abortdatabot databotinstanceid
+tdxcli databot start databotid databot.json
+tdxcli databot stop databotinstanceid
+tdxcli databot abort databotinstanceid
 ```
 
-Aborts the databot instance id ```databotinstanceid```.
-
-## ```stopdatabot```
-Usage
-```bash
-tdxcli stopdatabot databotinstanceid
-```
-
-Stops the databot instance id ```databotinstanceid```.
-
-## ```startdatabot```
-Usage
-```bash
-tdxcli startdatabot databotid databot.json
-```
-
-Starts an instance of the databot id ```databotid``` with the configuration file given by the file```databot.json```.
+The first command starts an instance of the databot id ```databotid``` with the configuration file given by the file path ```databot.json```.
 
 Example databot instance start configuration file:
 ```json
@@ -248,3 +232,5 @@ Example databot instance start configuration file:
   "shareKeySecret": "somesecret",
 }
 ```
+
+The second command stops the databot with the instance id ```databotinstanceid``` and the third command aborts the databot with the instance id ```databotinstanceid```.
