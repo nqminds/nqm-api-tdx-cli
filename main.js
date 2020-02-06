@@ -20,10 +20,10 @@ const {
   createFile,
 } = require("./src/utils");
 const {
-  listAliases,
   copyAliasConfig,
   modifyAliasConfig,
   removeAliasConfig,
+  getAliasesArray,
 } = require("./src/alias");
 const CommandHandler = require("./src");
 
@@ -56,8 +56,7 @@ async function run(commandName, commandProps) {
   let alias = commandProps.alias;
   const {
     id, secret, type, command, filepath,
-    aliasName, configJson, instanceId, databotId,
-    apiArgs, apiArgsStringify,
+    aliasName, configJson, apiArgs, apiArgsStringify,
   } = commandProps;
 
   try {
@@ -82,7 +81,7 @@ async function run(commandName, commandProps) {
     let output;
     switch (commandName) {
       case "signin":
-        await commandHandler.handleSignin(argumentSecret);
+        await commandHandler.signin(argumentSecret);
 
         setEnv({key: TDX_CURRENT_ALIAS, value: aliasToEnv(alias), envPath});
         // Store the argument secret
@@ -91,12 +90,12 @@ async function run(commandName, commandProps) {
         output = "OK";
         break;
       case "signout":
-        commandHandler.handleSignout();
+        await commandHandler.signout();
         setEnv({key: getTokenAliasName(alias), value: "", envPath});
         setEnv({key: getSecretAliasName(alias), value: "", envPath});
         break;
       case "info":
-        output = await commandHandler.handleInfo({id, type});
+        output = await commandHandler.getInfo({id, type});
         break;
       case "config":
         output = tdxConfig;
@@ -104,22 +103,22 @@ async function run(commandName, commandProps) {
       case "list":
         output = {
           default: alias,
-          aliases: listAliases(appConfig.tdxConfigs),
+          aliases: getAliasesArray(appConfig.tdxConfigs),
         };
         break;
       case "runapi":
-        output = await commandHandler.handleRunApi({command, apiArgs, apiArgsStringify});
+        output = await commandHandler.runApi({command, apiArgs, apiArgsStringify});
         output = JSON.stringify(output, null, 2);
         break;
       case "download":
-        await commandHandler.handleDownload(id, filepath);
+        await commandHandler.download(id, filepath);
         break;
       case "upload":
-        output = await commandHandler.handleUpload(id, filepath);
+        output = await commandHandler.upload(id, filepath);
         output = "OK";
         break;
       case "copyalias":
-        await copyAliasConfig({appConfig, alias, aliasName, configPath});
+        await copyAliasConfig({appConfig, alias, copyAliasName: aliasName, configPath});
         output = "OK";
         break;
       case "modifyalias":
@@ -133,7 +132,7 @@ async function run(commandName, commandProps) {
         output = "OK";
         break;
       case "databot":
-        output = await commandHandler.handleDatabot({command, id, configJson});
+        output = await commandHandler.runDatabotCommand({command, id, configJson});
         break;
     }
 
@@ -172,7 +171,7 @@ const argv = require("yargs")
   .help("h")
   .alias("h", "help")
   .alias("v", "version")
-  .epilog("Copyright Nquiringminds Ltd. 2019")
+  .epilog("Copyright Nquiringminds Ltd. 2020")
   .wrap(102)
   .argv;
 

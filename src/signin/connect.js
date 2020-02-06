@@ -13,17 +13,12 @@ async function connectWithSecret(config, secret) {
   return api;
 }
 
-async function connect({config, token, secret}) {
-  const tdxToken = token || "";
-  const tdxSecret = secret || {};
-
-  if (tdxToken) {
-    return connectWithToken(config, tdxToken);
-  } else {
-    if (("id" in tdxSecret) && ("secret" in tdxSecret)) {
-      return connectWithSecret(config, tdxSecret);
-    } else throw Error("No tdx credentials present!");
-  }
+async function connect({config, token = "", secret = {}}) {
+  if (token) {
+    return connectWithToken(config, token);
+  } else if (("id" in secret) && ("secret" in secret)) {
+    return connectWithSecret(config, secret);
+  } else throw Error("No tdx credentials present!");
 }
 
 module.exports = {

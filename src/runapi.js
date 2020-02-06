@@ -1,6 +1,8 @@
 const apiCommands = require("./tdx-api-commands");
 
 function objectToListMapper(obj) {
+  // For the ob={"3": {}, "1": {}, "5": {}} will output
+  // [["1", 1], ["2", 2], ["3", 3]]
   return Object.keys(obj).sort().map((element) => ([element, Number(element)]));
 }
 
@@ -26,13 +28,12 @@ function getFunctionArguments(args) {
   const mapper = objectToListMapper(args);
   let fullArgs = [];
 
-  mapper.forEach((element) => {
-    const argument = args[element[0]];
-    const argumentIdx = element[1];
+  for (const [argumentKey, argumentIdx] of mapper) {
+    const argument = args[argumentKey];
     const nullArrayLength = argumentIdx - fullArgs.length - 1;
     const nullArray = Array((nullArrayLength >= 0) ? nullArrayLength : 0).fill(null);
     fullArgs = fullArgs.concat(nullArray, [argument]);
-  });
+  }
 
   return fullArgs;
 }

@@ -1,15 +1,15 @@
 const nqmUtils = require("@nqminds/nqm-core-utils");
 const {readJsonFromFile} = require("./utils");
 
-async function abortDatabot(api, id) {
+function abortDatabot(api, id) {
   return api.abortDatabotInstance(id);
 }
 
-async function stopDatabot(api, id) {
+function stopDatabot(api, id) {
   return api.stopDatabotInstance(id, nqmUtils.constants.stopDatabotInstance);
 }
 
-async function startDatabot({api, id, functionPayload}) {
+function startDatabot({api, id, functionPayload}) {
   return api.startDatabotInstance(id, functionPayload);
 }
 

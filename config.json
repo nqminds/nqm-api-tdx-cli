@@ -20,6 +20,16 @@
         "tdxServer": "https://tdx.nq-m.com",
         "accessTokenTTL": 31622400
       }
+    },
+    "nqm4": {
+      "tokenHref": "https://tbx.nqminds.com",
+      "config": {
+        "commandServer": "https://cmd.nqminds.com",
+        "ddpServer": "https://ddp.nqminds.com",
+        "queryServer": "https://q.nqminds.com",
+        "tdxServer": "https://tdx.nqminds.com",
+        "accessTokenTTL": 31622400
+      }
     }
   }
 }

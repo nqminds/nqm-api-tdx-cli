@@ -20,7 +20,7 @@ class CommandHandler {
     return this.accessToken;
   }
 
-  async handleConnect() {
+  async connect() {
     const api = await connect({
       config: this.config,
       secret: this.secret,
@@ -32,21 +32,21 @@ class CommandHandler {
     return api;
   }
 
-  async handleSignin(secret) {
-    const api = (secret.id) ? await this.handleSecretSignin(secret) :
-      await this.handleWebSignin();
+  async signin(secret) {
+    const api = (secret.id) ? await this.secretSignin(secret) :
+      await this.webSignin();
 
     this.accessToken = api.accessToken;
 
     return api;
   }
 
-  async handleWebSignin() {
+  async webSignin() {
     const api = await webWindowSignin(this.config, this.tokenHref);
     return api;
   }
 
-  async handleSecretSignin(secret) {
+  async secretSignin(secret) {
     const api = await secretSignin({
       config: this.config,
       tokenHref: this.tokenHref,
@@ -56,33 +56,33 @@ class CommandHandler {
     return api;
   }
 
-  handleSignout() {
+  async signout() {
     this.accessToken = "";
     this.secret = {};
   }
 
-  async handleRunApi({command, apiArgs, apiArgsStringify}) {
-    const api = await this.handleConnect();
+  async runApi({command, apiArgs, apiArgsStringify}) {
+    const api = await this.connect();
     return runApi({command, apiArgs, apiArgsStringify, api});
   }
 
-  async handleInfo({id, type}) {
-    const api = await this.handleConnect();
+  async getInfo({id, type}) {
+    const api = await this.connect();
     return getInfo({api, type, id});
   }
 
-  async handleDownload(id, filepath) {
-    const api = await this.handleConnect();
+  async download(id, filepath) {
+    const api = await this.connect();
     return downloadResource({id, filepath, api});
   }
 
-  async handleUpload(id, filepath) {
-    const api = await this.handleConnect();
+  async upload(id, filepath) {
+    const api = await this.connect();
     return uploadResource({id, filepath, api});
   }
 
-  async handleDatabot({command, id, configJson}) {
-    const api = await this.handleConnect();
+  async runDatabotCommand({command, id, configJson}) {
+    const api = await this.connect();
     return runDatabotCommand({api, command, id, configJson});
   }
 }
