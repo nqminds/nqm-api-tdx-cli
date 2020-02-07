@@ -1,4 +1,4 @@
-# nqm-tdx-terminal-cli![Node.js CI](https://github.com/nqminds/nqm-tdx-terminal-cli/workflows/Node.js%20CI/badge.svg)[![npm version](https://badge.fury.io/js/%40nqminds%2Fnqm-tdx-terminal-cli.svg)](https://badge.fury.io/js/%40nqminds%2Fnqm-tdx-terminal-cli)
+# nqm-tdx-terminal-cli![Master CI](https://github.com/nqminds/nqm-tdx-terminal-cli/workflows/Master%20CI/badge.svg?branch=master)[![npm version](https://badge.fury.io/js/%40nqminds%2Fnqm-tdx-terminal-cli.svg)](https://badge.fury.io/js/%40nqminds%2Fnqm-tdx-terminal-cli)
 Nquiringminds TDX API client application
 
 ## Install
