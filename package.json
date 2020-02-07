@@ -1,6 +1,6 @@
 {
   "name": "@nqminds/nqm-tdx-terminal-cli",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Command-line interface for accessing the TDX API",
   "main": "main.js",
   "directories": {
@@ -9,6 +9,9 @@
   "bin": {
     "tdxcli": "./bin/tdxcli"
   },
+  "engines": {
+    "node": ">=10.17.0"
+  },  
   "dependencies": {
     "@nqminds/nqm-api-tdx": "^0.9.1",
     "@nqminds/nqm-core-utils": "^0.5.9",
@@ -16,6 +19,7 @@
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
     "puppeteer": "^2.0.0",
+    "request": "^2.88.0",
     "yargs": "^15.1.0"
   },
   "devDependencies": {

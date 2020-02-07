@@ -1,4 +1,23 @@
-# nqm-tdx-terminal-cli![Master CI](https://github.com/nqminds/nqm-tdx-terminal-cli/workflows/Master%20CI/badge.svg?branch=master)[![npm version](https://badge.fury.io/js/%40nqminds%2Fnqm-tdx-terminal-cli.svg)](https://badge.fury.io/js/%40nqminds%2Fnqm-tdx-terminal-cli)
+# nqm-tdx-terminal-cli
+
+<p align="center" id="badges">
+  <a href="https://github.com/nqminds/nqm-tdx-terminal-cli/actions?query=workflow%3A%22Master+CI%22">
+    <img alt="Test" src="https://github.com/nqminds/nqm-tdx-terminal-cli/workflows/Master%20CI/badge.svg">
+  </a>
+  <a href="https://www.npmjs.com/package/@nqminds/nqm-tdx-terminal-cli">
+    <img alt="npm" src="https://img.shields.io/npm/v/@nqminds/nqm-tdx-terminal-cli">
+  </a>
+  <a href="https://www.npmjs.com/package/@nqminds/nqm-tdx-terminal-cli">
+    <img alt="node" src="https://img.shields.io/node/v/@nqminds/nqm-tdx-terminal-cli">
+  </a>
+  <a href="https://nqminds.github.io/nqm-tdx-terminal-cli/">
+    <img alt="Website" src="https://img.shields.io/website/https/nqminds.github.io/nqm-tdx-terminal-cli.svg">
+  </a>
+  <a href="https://github.com/nqminds/nqm-tdx-terminal-cli/issues">
+    <img alt="GitHub issues" src="https://img.shields.io/github/issues/nqminds/nqm-tdx-terminal-cli">
+  </a>  
+</p>
+
 Nquiringminds TDX API client application
 
 ## Install
@@ -17,7 +36,7 @@ Commands:
   tdxcli signout                               Sign out of tdx
   tdxcli info [type] [id]                      Output current account info
   tdxcli config                                Output tdx config
-  tdxcli list                                  List all configured aliases
+  tdxcli list [type]                           List all configured aliases or secrets
   tdxcli runapi <command>                      Run a tdx api command
   tdxcli download <id> [filepath]              Download resource
   tdxcli upload <id> <filepath>                Upload resource
@@ -25,15 +44,35 @@ Commands:
   tdxcli modifyalias <aliasname> <configjson>  Modifies an existing alias configuration
   tdxcli removealias <aliasname>               Removes an existing alias configuration
   tdxcli databot <command> <id> [configjson]   Starts, stops or aborts a databot instance
+  tdxcli token <command>                       Get or revoke a token for a give alias
 
 Options:
-  -a, --alias    Alias name                                                                   [string]
-  -h, --help     Show help                                                                   [boolean]
-  -v, --version  Show version number                                                         [boolean]
+  -a, --alias        Alias name                                                               [string]
+  -c, --credentials  Input credentials in base64                                              [string]
+  -h, --help         Show help                                                               [boolean]
+  -v, --version      Show version number                                                     [boolean]
 ```
 
 ## Documentation
 In order to use the ```tdxcli``` app one has to sign into a tdx account with an email address or share token (id and secret). If the user signs in using an email address the ```tdxcli``` will automatically open a Chromium browser window where the user can input the credentials. If the user signs in with an email id + secret the ```tdxcli``` app will open a headless Chromium window and will automatically fill in the credentials. Finally, if the user signs in with a share token the ```tdxcli``` will sign in using the tdx api authentication method.
+
+### Credentials
+The user can signin automatically and run each ```tdxcli``` command except ```signin``` with a predefined ```secret``` in base64 of the form ```{"id": "", "secret": ""}```. The credentials can be passed as a paramater together with a preconfigured alias name as follows:
+```bash
+tdxcli commandtoexecute ...variousparams --alias=name --credentials=secretinbase64
+```
+
+The credentials can also be passed as an environment variable as follows:
+```bash
+TDX_CREDENTIALS=secretinbase64 tdxcli commandtoexecute ...variousparams --alias=name
+```
+
+To get a credentials in base64 the user can sign in and retrieve the credentials with the below commands:
+```bash
+tdxcli signin id secret --alias=name
+tdxcli list credentials
+```
+The output of the last command will show the credentials under the alias name ```name```.
 
 ### ```signin```
 Usage
@@ -123,9 +162,10 @@ Outputs the current tdx config for the default or a given alias name ```name```.
 ## ```list```
 Usage
 ```bash
-tdxcli list
+tdxcli list aliases
+tdxcli list secrets
 ```
-Lists the default alias and all configured ones.
+The first command lists all configured aliases. The second command lists all secrets in base64 for each configured alias.
 
 ## ```runapi```
 Usage
@@ -234,3 +274,11 @@ Example databot instance start configuration file:
 ```
 
 The second command stops the databot with the instance id ```databotinstanceid``` and the third command aborts the databot with the instance id ```databotinstanceid```.
+
+## ```token```
+Usage
+```bash
+tdxcli token get
+```
+
+The command returns the access token for a the default alias or an alias passed with ```--alias```.

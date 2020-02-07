@@ -3,7 +3,7 @@
 
 const path = require("path");
 const appConfig = require("./config.json");
-const {TDX_CURRENT_ALIAS} = require("./src/constants");
+const {TDX_CURRENT_ALIAS, TDX_CREDENTIALS} = require("./src/constants");
 const {
   checkValidAlias,
   envToAlias,
@@ -23,7 +23,6 @@ const {
   copyAliasConfig,
   modifyAliasConfig,
   removeAliasConfig,
-  getAliasesArray,
 } = require("./src/alias");
 const CommandHandler = require("./src");
 
@@ -45,6 +44,7 @@ async function argumentHandler(argv) {
     configJson: numberToString(argv.configjson || ""),
     instanceId: numberToString(argv.instanceid || ""),
     databotId: numberToString(argv.databotid || ""),
+    credentials: numberToString(argv.credentials || ""),
     apiArgs: filterObjectByIdentifier(argv, "@"),
     apiArgsStringify: filterListByIdentifier(argv._.slice(1), "@"),
   };
@@ -54,8 +54,9 @@ async function argumentHandler(argv) {
 
 async function run(commandName, commandProps) {
   let alias = commandProps.alias;
+  let credentials = commandProps.credentials;
   const {
-    id, secret, type, command, filepath,
+    id, secret, type, command, filepath, 
     aliasName, configJson, apiArgs, apiArgsStringify,
   } = commandProps;
 
@@ -63,20 +64,30 @@ async function run(commandName, commandProps) {
     await createFile(envPath);
 
     if (alias === "") alias = envToAlias(process.env[TDX_CURRENT_ALIAS] || "");
-    if (!alias) throw Error("No alias defined.");
-    if (!checkValidAlias(alias)) throw Error("Wrong alias name. Only allowed [a-zA-Z0-9_]");
+    if (credentials === "") credentials = process.env[TDX_CREDENTIALS] || "";
+
+    if (commandName !== "list" && !checkValidAlias(alias)) {
+      throw Error("No alias or wrong alias name. Only allowed [a-zA-Z0-9_]");
+    }
 
     const argumentSecret = {id, secret};
-    const storedSecret = base64ToJson(process.env[getSecretAliasName(alias)] || "");
-    const storedToken = process.env[getTokenAliasName(alias)];
     const tdxConfig = appConfig.tdxConfigs[alias] || {};
+    const configArgs = {tdxConfig, timeout: appConfig.scraperTimeout};
+    let commandHandler;
 
-    const commandHandler = new CommandHandler({
-      tdxConfig,
-      secret: storedSecret,
-      token: storedToken,
-      timeout: appConfig.scraperTimeout,
-    });
+    if (commandName !== "signin" && credentials) {
+      commandHandler = new CommandHandler({
+        secret: base64ToJson(credentials),
+        token: "",
+        ...configArgs,
+      });
+    } else {
+      commandHandler = new CommandHandler({
+        secret: base64ToJson(process.env[getSecretAliasName(alias)] || ""),
+        token: process.env[getTokenAliasName(alias)],
+        ...configArgs,
+      });
+    }
 
     let output;
     switch (commandName) {
@@ -101,10 +112,12 @@ async function run(commandName, commandProps) {
         output = tdxConfig;
         break;
       case "list":
-        output = {
-          default: alias,
-          aliases: getAliasesArray(appConfig.tdxConfigs),
-        };
+        output = await commandHandler.getList({
+          type,
+          alias,
+          tdxConfigs: appConfig.tdxConfigs,
+          env: process.env,
+        });
         break;
       case "runapi":
         output = await commandHandler.runApi({command, apiArgs, apiArgsStringify});
@@ -134,6 +147,9 @@ async function run(commandName, commandProps) {
       case "databot":
         output = await commandHandler.runDatabotCommand({command, id, configJson});
         break;
+      case "token":
+        output = await commandHandler.runTokenCommand(command);
+        break;
     }
 
     if (output) console.log(output);
@@ -152,7 +168,7 @@ const argv = require("yargs")
   .command("signout", "Sign out of tdx", {}, argumentHandler)
   .command("info [type] [id]", "Output current account info", {}, argumentHandler)
   .command("config", "Output tdx config", {}, argumentHandler)
-  .command("list", "List all configured aliases", {}, argumentHandler)
+  .command("list [type]", "List all configured aliases or secrets", {}, argumentHandler)
   .command("runapi <command>", "Run a tdx api command", {}, argumentHandler)
   .command("download <id> [filepath]", "Download resource", {}, argumentHandler)
   .command("upload <id> <filepath>", "Upload resource", {}, argumentHandler)
@@ -160,11 +176,19 @@ const argv = require("yargs")
   .command("modifyalias <aliasname> <configjson>", "Modifies an existing alias configuration", {}, argumentHandler)
   .command("removealias <aliasname>", "Removes an existing alias configuration", {}, argumentHandler)
   .command("databot <command> <id> [configjson]", "Starts, stops or aborts a databot instance", {}, argumentHandler)
+  .command("token <command>", "Get or revoke a token for a give alias", {}, argumentHandler)
   .demandCommand(1, 1, "You need at least one command to run.")
   .option("a", {
     alias: "alias",
     nargs: 1,
     describe: "Alias name",
+    type: "string",
+    requiresArg: true,
+  })
+  .option("c", {
+    alias: "credentials",
+    nargs: 1,
+    describe: "Input credentials in base64",
     type: "string",
     requiresArg: true,
   })

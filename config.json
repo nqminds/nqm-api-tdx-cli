@@ -21,7 +21,7 @@
         "accessTokenTTL": 31622400
       }
     },
-    "nqm4": {
+    "nqm1": {
       "tokenHref": "https://tbx.nqminds.com",
       "config": {
         "commandServer": "https://cmd.nqminds.com",
