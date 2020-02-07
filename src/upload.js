@@ -2,6 +2,23 @@ const fs = require("fs");
 const request = require("request");
 const path = require("path");
 const databotUtils = require("@nqminds/nqm-databot-utils");
+const {getInfo} = require("./info");
+
+async function getUsername(api) {
+  const info = await getInfo({api});
+  return info.username || "";
+}
+
+async function verifyResource(api, id) {
+  const username = await getUsername(api);
+  const output = await api.getResource(id);
+  const access = await api.getResourceAccess(id);
+  const result = access.find((element) => (element.aid === username && "w" in element));
+
+  if (result === undefined) {
+    throw Error("No write access to resource");
+  } else return output;
+}
 
 function getFileStream(filepath) {
   const resourceStream = fs.createReadStream(filepath);
@@ -32,7 +49,7 @@ async function pipeStream(req, resourceStream) {
       if ("message" in uploadError) {
         reject(uploadError);
       } else {
-        resolve("OK");
+        resolve();
       }
     });
     req.on("error", (err) => reject(err));
@@ -62,8 +79,10 @@ async function uploadStream({api, resourceStream, filename, filesize, id}) {
 
 async function uploadResource({id, filepath, api}) {
   if (filepath) {
+    const output = await verifyResource(api, id);
     const {resourceStream, filename, filesize} = getFileStream(filepath);
-    return uploadStream({api, resourceStream, filename, filesize, id});
+    await uploadStream({api, resourceStream, filename, filesize, id});
+    return output;
   } else {
     return Error("Input streams unsupported!");
   }

@@ -128,7 +128,6 @@ async function run(commandName, commandProps) {
         break;
       case "upload":
         output = await commandHandler.upload(id, filepath);
-        output = "OK";
         break;
       case "copyalias":
         await copyAliasConfig({appConfig, alias, copyAliasName: aliasName, configPath});

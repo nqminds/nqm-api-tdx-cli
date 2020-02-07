@@ -6,6 +6,13 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.7] - 2020-02-07
+
+### Changed
+
+### Fixed
+- Upload bug (added write verification).
+
 ## [0.2.6] - 2020-02-07
 
 ### Changed
