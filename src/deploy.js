@@ -8,7 +8,7 @@ async function stop(api, id) {
     console.log(error);
   }
 }
-async function deploy({id, configJson, filepath, api}) {
+async function deploy({id, resourceId, configJson, filepath, api}) {
   const functionPayload = await readJsonFromFile(configJson);
   const databotInstanceId = functionPayload.id || "";
   await stop(api, databotInstanceId);
