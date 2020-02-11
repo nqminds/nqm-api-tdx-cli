@@ -1,0 +1,13 @@
+{
+  "inputs": {
+    "settings": {}
+  },
+  "id": "instanceid",
+  "name": "somename",
+  "overwriteExisting": "instanceid",
+  "schedule": {
+    "always": true
+  },
+  "shareKeyId": "someappid",
+  "shareKeySecret": "somesecret"
+}

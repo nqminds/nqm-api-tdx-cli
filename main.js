@@ -156,6 +156,9 @@ async function run(commandName, commandProps) {
       case "token":
         output = await commandHandler.runTokenCommand(command);
         break;
+      case "deploy":
+        output = await commandHandler.deploy({id, configJson, filepath});
+        break;
     }
 
     if (output) console.log(output);
@@ -175,6 +178,7 @@ const argv = require("yargs")
   .command("info [type] [id]", "Output current account info", {}, argumentHandler)
   .command("config", "Output tdx config", {}, argumentHandler)
   .command("list [type]", "List all configured aliases or secrets", {}, argumentHandler)
+  .command("token <command>", "Get or revoke a token for a give alias", {}, argumentHandler)
   .command("runapi <command>", "Run a tdx api command", {}, argumentHandler)
   .command("download <id> [filepath]", "Download resource", {}, argumentHandler)
   .command("upload <id> <filepath>", "Upload resource", {}, argumentHandler)
@@ -182,7 +186,7 @@ const argv = require("yargs")
   .command("modifyalias <aliasname> <configjson>", "Modifies an existing alias configuration", {}, argumentHandler)
   .command("removealias <aliasname>", "Removes an existing alias configuration", {}, argumentHandler)
   .command("databot <command> <id> [configjson]", "Starts, stops or aborts a databot instance", {}, argumentHandler)
-  .command("token <command>", "Get or revoke a token for a give alias", {}, argumentHandler)
+  .command("deploy <id> <configjson> <filepath>", "Deploys a databot abort->upload->start", {}, argumentHandler)
   .demandCommand(1, 1, "You need at least one command to run.")
   .option("a", {
     alias: "alias",
@@ -194,7 +198,7 @@ const argv = require("yargs")
   .option("c", {
     alias: "credentials",
     nargs: 1,
-    describe: "Input credentials in base64",
+    describe: "TDX credentials {id:\"\",secret:\"\"} in base64",
     type: "string",
     requiresArg: true,
   })
