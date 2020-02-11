@@ -6,6 +6,14 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.8] - 2020-02-11
+
+### Changed
+ - The .env and alias config files stored in home dir (```.tdxcli```).
+ 
+### Fixed
+
+
 ## [0.2.7] - 2020-02-07
 
 ### Changed

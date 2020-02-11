@@ -18,7 +18,7 @@
   </a>  
 </p>
 
-Nquiringminds TDX API client application
+Command-line interface for accessing the TDX API
 
 ## Install
 The best use of tdxcli tool is to install it with npm globally as follows:

@@ -1,8 +1,10 @@
 /* eslint-disable no-console */
 "use strict";
 
+const os = require("os");
 const path = require("path");
-const appConfig = require("./config.json");
+const appConfig = require("./config.app.json");
+const defaultConfig = require("./config.default.json");
 const {TDX_CURRENT_ALIAS, TDX_CREDENTIALS} = require("./src/constants");
 const {
   checkValidAlias,
@@ -18,6 +20,7 @@ const {
   readJsonFromFile,
   numberToString,
   createFile,
+  mkdir,
 } = require("./src/utils");
 const {
   copyAliasConfig,
@@ -26,8 +29,10 @@ const {
 } = require("./src/alias");
 const CommandHandler = require("./src");
 
-const envPath = path.join(__dirname, ".env");
-const configPath = path.join(__dirname, "config.json");
+const homePath = os.homedir();
+const tdxcliConfigPath = path.join(homePath, ".tdxcli");
+const envPath = path.join(tdxcliConfigPath, ".env");
+const configPath = path.join(tdxcliConfigPath, "config.json");
 
 require("dotenv").config({path: envPath});
 
@@ -56,12 +61,14 @@ async function run(commandName, commandProps) {
   let alias = commandProps.alias;
   let credentials = commandProps.credentials;
   const {
-    id, secret, type, command, filepath, 
+    id, secret, type, command, filepath,
     aliasName, configJson, apiArgs, apiArgsStringify,
   } = commandProps;
 
   try {
+    await mkdir(tdxcliConfigPath);
     await createFile(envPath);
+    await createFile(configPath, JSON.stringify(defaultConfig, null, 2));
 
     if (alias === "") alias = envToAlias(process.env[TDX_CURRENT_ALIAS] || "");
     if (credentials === "") credentials = process.env[TDX_CREDENTIALS] || "";
@@ -70,9 +77,9 @@ async function run(commandName, commandProps) {
       throw Error("No alias or wrong alias name. Only allowed [a-zA-Z0-9_]");
     }
 
+    const tdxConfigs = await readJsonFromFile(configPath);
     const argumentSecret = {id, secret};
-    const tdxConfig = appConfig.tdxConfigs[alias] || {};
-    const configArgs = {tdxConfig, timeout: appConfig.scraperTimeout};
+    const configArgs = {tdxConfig: tdxConfigs[alias] || {}, timeout: appConfig.scraperTimeout};
     let commandHandler;
 
     if (commandName !== "signin" && credentials) {
@@ -109,13 +116,13 @@ async function run(commandName, commandProps) {
         output = await commandHandler.getInfo({id, type});
         break;
       case "config":
-        output = tdxConfig;
+        output = tdxConfigs[alias] || {};
         break;
       case "list":
         output = await commandHandler.getList({
           type,
           alias,
-          tdxConfigs: appConfig.tdxConfigs,
+          tdxConfigs,
           env: process.env,
         });
         break;
@@ -130,17 +137,17 @@ async function run(commandName, commandProps) {
         output = await commandHandler.upload(id, filepath);
         break;
       case "copyalias":
-        await copyAliasConfig({appConfig, alias, copyAliasName: aliasName, configPath});
+        await copyAliasConfig({tdxConfigs, alias, copyAliasName: aliasName, configPath});
         output = "OK";
         break;
       case "modifyalias":
         const aliasConfig = await readJsonFromFile(configJson);
-        await modifyAliasConfig({appConfig, aliasName, aliasConfig, configPath});
+        await modifyAliasConfig({tdxConfigs, aliasName, aliasConfig, configPath});
         output = "OK";
         break;
       case "removealias":
         if (alias === aliasName) throw Error("Can't remove the running alias.");
-        await removeAliasConfig({appConfig, aliasName, configPath});
+        await removeAliasConfig({tdxConfigs, aliasName, configPath});
         output = "OK";
         break;
       case "databot":

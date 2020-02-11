@@ -38,7 +38,7 @@ test("pipeStream should return error on resourceStream error", async() => {
 
   const response = upload.pipeStream(mockWriteable, mockReadable);
   mockReadable.emit("error", error);
-  expect(response).rejects.toEqual(error);
+  await expect(response).rejects.toEqual(error);
 });
 
 test("pipeStream should return \"OK\" on end event", async() => {
@@ -47,7 +47,7 @@ test("pipeStream should return \"OK\" on end event", async() => {
 
   const response = upload.pipeStream(mockWriteable, mockReadable);
   mockReadable.emit("end");
-  expect(response).resolves.toEqual("OK");
+  await expect(response).resolves;
 });
 
 test("pipeStream should return error on erronous data", async() => {
@@ -61,5 +61,5 @@ test("pipeStream should return error on erronous data", async() => {
   const response = upload.pipeStream(mockWriteable, mockReadable);
   mockWriteable.emit("data", buf);
   mockReadable.emit("end");
-  expect(response).rejects.toEqual(Error(data.message));
+  await expect(response).rejects.toEqual(Error(data.message));
 });
