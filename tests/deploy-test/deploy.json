@@ -1,11 +1,11 @@
 {
   "inputs": {},
-  "id": "instanceid",
-  "name": "somename",
-  "overwriteExisting": "instanceid",
+  "id": "ryK7fHNX8",
+  "name": "test-databot 1",
+  "overwriteExisting": "ryK7fHNX8",
   "schedule": {
     "always": true
   },
-  "shareKeyId": "someappid",
-  "shareKeySecret": "somesecret"
+  "shareKeyId": "mereacre@gmail.com/tdx.nqminds.com",
+  "shareKeySecret": ""
 }
