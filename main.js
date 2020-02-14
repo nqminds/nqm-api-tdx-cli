@@ -40,7 +40,12 @@ async function getConfigs(commandlineConfigPath, configPath) {
   if (commandlineConfigPath) {
     return readJsonFromFile(commandlineConfigPath);
   } else {
-    return readJsonFromFile(configPath);
+    try {
+      const output = await readJsonFromFile(configPath);
+      return output;
+    } catch (error) {
+      return {};
+    }
   }
 }
 
@@ -82,7 +87,7 @@ async function run(commandName, commandProps) {
     }
 
     const tdxConfigs = await getConfigs(commandlineConfigPath, configPath);
-    if (!(alias in tdxConfigs) && (commandName !== "modifyalias")) {
+    if (!(alias in tdxConfigs) && (!["signin", "modifyalias"].includes(commandName))) {
       throw Error(`No configuration found for alias=${alias}`);
     }
 
@@ -111,12 +116,16 @@ async function run(commandName, commandProps) {
         await mkdir(tdxcliConfigPath);
         await createFile(envPath);
         await createFile(configPath, JSON.stringify(defaultConfig, null, 2));
+        const newTdxConfigs = await readJsonFromFile(configPath);
 
+        commandHandler.setTdxConfig(newTdxConfigs[alias]);
         await commandHandler.signin(argumentSecret);
 
         setEnv({key: TDX_CURRENT_ALIAS, value: aliasToEnv(alias), envPath});
         // Store the argument secret
-        if (argumentSecret.id) setEnv({key: getSecretAliasName(alias), value: jsonToBase64(argumentSecret), envPath});
+        if (argumentSecret.id) {
+          setEnv({key: getSecretAliasName(alias), value: jsonToBase64(argumentSecret), envPath});
+        }
         setEnv({key: getTokenAliasName(alias), value: commandHandler.getToken(), envPath});
         output = "OK";
         break;

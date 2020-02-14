@@ -1,7 +1,5 @@
 {
-  "inputs": {
-    "settings": {}
-  },
+  "inputs": {},
   "id": "instanceid",
   "name": "somename",
   "overwriteExisting": "instanceid",

@@ -23,6 +23,11 @@ class CommandHandler {
     return this.accessToken;
   }
 
+  setTdxConfig({tokenHref = {}, config = {}}) {
+    this.tokenHref = tokenHref;
+    this.config = config;
+  }
+
   async connect() {
     const api = await connect({
       config: this.config,
