@@ -135,7 +135,11 @@ async function run(commandName, commandProps) {
         setEnv({key: getSecretAliasName(alias), value: "", envPath});
         break;
       case "info":
-        output = await commandHandler.getInfo({id, type});
+        output = await commandHandler.getInfo({
+          id,
+          type,
+          tdxConfig: tdxConfigs[alias] || {},
+        });
         break;
       case "config":
         output = tdxConfigs[alias] || {};
@@ -182,6 +186,7 @@ async function run(commandName, commandProps) {
         break;
       case "deploy":
         output = await commandHandler.deploy({id, resourceId, configJson, filepath});
+        output = JSON.stringify(output, null, 2);
         break;
     }
 

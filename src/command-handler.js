@@ -74,9 +74,9 @@ class CommandHandler {
     return runApi({command, apiArgs, apiArgsStringify, api});
   }
 
-  async getInfo({id, type}) {
+  async getInfo({id, type, tdxConfig}) {
     const api = await this.connect();
-    return getInfo({api, type, id});
+    return getInfo({api, type, id, tdxConfig});
   }
 
   async download(id, filepath) {
@@ -122,9 +122,9 @@ class CommandHandler {
     }
   }
 
-  async deploy({id, configJson, filepath}) {
+  async deploy({id, resourceId, configJson, filepath}) {
     const api = await this.connect();
-    return deploy({id, configJson, filepath, api});
+    return deploy({id, resourceId, configJson, filepath, api});
   }
 }
 

@@ -32,23 +32,25 @@ The client app can be accessed by running the command ```tdxcli```.
 Usage: tdxcli <command> [options]
 
 Commands:
-  tdxcli signin [id] [secret]                  Sign in to tdx
-  tdxcli signout                               Sign out of tdx
-  tdxcli info [type] [id]                      Output current account info
-  tdxcli config                                Output tdx config
-  tdxcli list [type]                           List all configured aliases or secrets
-  tdxcli runapi <command>                      Run a tdx api command
-  tdxcli download <id> [filepath]              Download resource
-  tdxcli upload <id> <filepath>                Upload resource
-  tdxcli copyalias <aliasname>                 Makes a copy of an existing alias configuration
-  tdxcli modifyalias <aliasname> <configjson>  Modifies an existing alias configuration
-  tdxcli removealias <aliasname>               Removes an existing alias configuration
-  tdxcli databot <command> <id> [configjson]   Starts, stops or aborts a databot instance
-  tdxcli token <command>                       Get or revoke a token for a give alias
+  tdxcli signin [id] [secret]                   Sign in to tdx
+  tdxcli signout                                Sign out of tdx
+  tdxcli info [type] [id]                       Output current account info
+  tdxcli config                                 Output tdx config
+  tdxcli list [type]                            List all configured aliases or secrets
+  tdxcli token <command>                        Get or revoke a token for a give alias
+  tdxcli runapi <command>                       Run a tdx api command
+  tdxcli download <rid> [filepath]              Download resource
+  tdxcli upload <rid> <filepath>                Upload resource
+  tdxcli copyalias <name>                       Makes a copy of an existing alias configuration
+  tdxcli modifyalias <name> <config>            Modifies an existing alias configuration
+  tdxcli removealias <name>                     Removes an existing alias configuration
+  tdxcli databot <command> <id> [config]        Starts, stops or aborts a databot instance
+  tdxcli deploy <id> <rid> <config> <filepath>  Deploys a databot stop->upload->start
 
 Options:
   -a, --alias        Alias name                                                               [string]
-  -c, --credentials  Input credentials in base64                                              [string]
+  -c, --credentials  TDX credentials {id:"",secret:""} in base64                              [string]
+  -t, --tdx-configs  The path to the TDX config file                                          [string]
   -h, --help         Show help                                                               [boolean]
   -v, --version      Show version number                                                     [boolean]
 ```
@@ -74,6 +76,41 @@ tdxcli list credentials
 ```
 The output of the last command will show the credentials under the alias name ```name```.
 
+### Tdx config file
+One can also pass a custom tdx config file with param ```--tdx-config``` as follows:
+```bash
+tdxcli commandtoexecute ...variousparams --alias=name --tdx-config=pathtoconfig
+```
+
+The config file contains the tdx configuratin for each defined alias as follows:
+```json
+{
+  "nqminds": {
+    "tokenHref": "https://tbx.nqminds.com",
+    "config": {
+      "commandServer": "https://cmd.nqminds.com",
+      "ddpServer": "https://ddp.nqminds.com",
+      "queryServer": "https://q.nqminds.com",
+      "tdxServer": "https://tdx.nqminds.com",
+      "databotServer": "http://databot.nqminds.com",
+      "accessTokenTTL": 31622400
+    }
+  },
+  "nq_m": {
+    "tokenHref": "https://tbx.nq-m.com",
+    "config": {
+      "commandServer": "https://cmd.nq-m.com",
+      "ddpServer": "https://ddp.nq-m.com",
+      "queryServer": "https://q.nq-m.com",
+      "tdxServer": "https://tdx.nq-m.com",
+      "databotServer": "http://databot.nq-m.com",
+      "accessTokenTTL": 31622400
+    }
+  }
+}
+```
+In the above example there are two defined aliases ```nqminds``` and ```nq-m```.
+
 ### ```signin```
 Usage
 ```bash
@@ -89,32 +126,7 @@ tdxcli signin --alias=nqminds
 tdxcli signin emailorsharetokenid thesecret --alias=nq_m
 ```
 
-The aliases configurations are stored in ```config.json```:
-```json
-  "tdxConfigs": {
-    "nqminds": {
-      "tokenHref": "https://tbx.nqminds.com",
-      "config": {
-        "commandServer": "https://cmd.nqminds.com",
-        "ddpServer": "https://ddp.nqminds.com",
-        "queryServer": "https://q.nqminds.com",
-        "tdxServer": "https://tdx.nqminds.com",
-        "accessTokenTTL": 31622400
-      }
-    },
-    "nq_m": {
-      "tokenHref": "https://tbx.nq-m.com",
-      "config": {
-        "commandServer": "https://cmd.nq-m.com",
-        "ddpServer": "https://ddp.nq-m.com",
-        "queryServer": "https://q.nq-m.com",
-        "tdxServer": "https://tdx.nq-m.com",
-        "accessTokenTTL": 31622400
-      }
-    }
-  }
-```
-An new alias can be copied from an existing alias, it can be modified or removed.
+Note, the aliases configurations are stored in ```config.json``` in home folder ```.tdxcli``` of the user. A new alias can be copied from an existing alias, it can be modified or removed.
 
 The ```tdxcli signin``` allows storing access tokens and secrets for every configured alias. So, that the user can change among them by providing the ```tdxcli signin --alias=name``` option.
 
@@ -142,6 +154,7 @@ tdxcli info
 tdxcli info account
 tdxcli info serverfolderid appid
 tdxcli info databotsid
+tdxcli info appurl instanceid
 ```
 The above command can also be run with the ```--alias``` option.
 
@@ -150,6 +163,8 @@ The above command can also be run with the ```--alias``` option.
 ```tdxcli info serverfolderid appid``` will return the server folder id for a given application id ```appid```.
 
 ```tdxcli info databotsid``` will return all databot ids.
+
+```tdxcli info appurl instanceid``` will return the app url for databot with instance ```instanceid```.
 
 ## ```config```
 Usage
@@ -282,3 +297,14 @@ tdxcli token get
 ```
 
 The command returns the access token for a the default alias or an alias passed with ```--alias```.
+
+## ```deploy```
+Usage
+```bash
+tdxcli deploy databotid resourceid databot.json filetoupload
+```
+
+The above command will deploy a databot with the following steps:
+[1] Will stop a running databot instance with the databot instance id from config file ```databot.json```.
+[2] Will upload the file ```filetoupload``` to tdx resource id ```resourceid```.
+[3] Will start a new databot instance id for the databot ```databotid```.
