@@ -82,7 +82,7 @@ One can also pass a custom tdx config file with param ```--tdx-config``` as foll
 tdxcli commandtoexecute ...variousparams --alias=name --tdx-config=pathtoconfig
 ```
 
-The config file contains the tdx configuratin for each defined alias as follows:
+The config file contains the tdx configuration for each defined alias as follows:
 ```json
 {
   "nqminds": {
@@ -305,6 +305,9 @@ tdxcli deploy databotid resourceid databot.json filetoupload
 ```
 
 The above command will deploy a databot with the following steps:
+
 [1] Will stop a running databot instance with the databot instance id from config file ```databot.json```.
+
 [2] Will upload the file ```filetoupload``` to tdx resource id ```resourceid```.
+
 [3] Will start a new databot instance id for the databot ```databotid```.
