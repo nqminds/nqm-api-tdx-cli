@@ -1,3 +1,6 @@
 {
-  "scraperTimeout": 5000
+  "scraperTimeout": 5000,
+  "tdxcliFoldername": ".tdxcli",
+  "envFilename": ".env",
+  "configFilename": "config.json"
 }

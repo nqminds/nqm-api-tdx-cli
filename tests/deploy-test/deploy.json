@@ -1,0 +1,11 @@
+{
+  "inputs": {},
+  "id": "ryK7fHNX8",
+  "name": "test-databot 1",
+  "overwriteExisting": "ryK7fHNX8",
+  "schedule": {
+    "always": true
+  },
+  "shareKeyId": "mereacre@nquiringminds.com/tdx.nqminds.com",
+  "shareKeySecret": ""
+}

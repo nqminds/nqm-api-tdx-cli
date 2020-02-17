@@ -30,11 +30,24 @@ const {
 const CommandHandler = require("./src");
 
 const homePath = os.homedir();
-const tdxcliConfigPath = path.join(homePath, ".tdxcli");
-const envPath = path.join(tdxcliConfigPath, ".env");
-const configPath = path.join(tdxcliConfigPath, "config.json");
+const tdxcliConfigPath = path.join(homePath, appConfig.tdxcliFoldername);
+const envPath = path.join(tdxcliConfigPath, appConfig.envFilename);
+const configPath = path.join(tdxcliConfigPath, appConfig.configFilename);
 
 require("dotenv").config({path: envPath});
+
+async function getConfigs(commandlineConfigPath, configPath) {
+  if (commandlineConfigPath) {
+    return readJsonFromFile(commandlineConfigPath);
+  } else {
+    try {
+      const output = await readJsonFromFile(configPath);
+      return output;
+    } catch (error) {
+      return {};
+    }
+  }
+}
 
 async function argumentHandler(argv) {
   const command = argv._[0];
@@ -42,14 +55,14 @@ async function argumentHandler(argv) {
     alias: numberToString(argv.alias || ""),
     id: numberToString(argv.id || ""),
     secret: numberToString(argv.secret || ""),
+    resourceId: numberToString(argv.rid || ""),
     type: numberToString(argv.type || ""),
     command: numberToString(argv.command || ""),
     filepath: numberToString(argv.filepath || ""),
-    aliasName: numberToString(argv.aliasname || ""),
-    configJson: numberToString(argv.configjson || ""),
-    instanceId: numberToString(argv.instanceid || ""),
-    databotId: numberToString(argv.databotid || ""),
+    aliasName: numberToString(argv.name || ""),
+    configJson: numberToString(argv.config || ""),
     credentials: numberToString(argv.credentials || ""),
+    commandlineConfigPath: numberToString(argv["tdx-configs"] || ""),
     apiArgs: filterObjectByIdentifier(argv, "@"),
     apiArgsStringify: filterListByIdentifier(argv._.slice(1), "@"),
   };
@@ -61,15 +74,11 @@ async function run(commandName, commandProps) {
   let alias = commandProps.alias;
   let credentials = commandProps.credentials;
   const {
-    id, secret, type, command, filepath,
-    aliasName, configJson, apiArgs, apiArgsStringify,
+    id, secret, type, command, filepath, commandlineConfigPath,
+    aliasName, configJson, apiArgs, apiArgsStringify, resourceId,
   } = commandProps;
 
   try {
-    await mkdir(tdxcliConfigPath);
-    await createFile(envPath);
-    await createFile(configPath, JSON.stringify(defaultConfig, null, 2));
-
     if (alias === "") alias = envToAlias(process.env[TDX_CURRENT_ALIAS] || "");
     if (credentials === "") credentials = process.env[TDX_CREDENTIALS] || "";
 
@@ -77,7 +86,11 @@ async function run(commandName, commandProps) {
       throw Error("No alias or wrong alias name. Only allowed [a-zA-Z0-9_]");
     }
 
-    const tdxConfigs = await readJsonFromFile(configPath);
+    const tdxConfigs = await getConfigs(commandlineConfigPath, configPath);
+    if (!(alias in tdxConfigs) && (!["signin", "modifyalias"].includes(commandName))) {
+      throw Error(`No configuration found for alias=${alias}`);
+    }
+
     const argumentSecret = {id, secret};
     const configArgs = {tdxConfig: tdxConfigs[alias] || {}, timeout: appConfig.scraperTimeout};
     let commandHandler;
@@ -99,11 +112,20 @@ async function run(commandName, commandProps) {
     let output;
     switch (commandName) {
       case "signin":
+        // Create the .tdxcli folder in the home directory
+        await mkdir(tdxcliConfigPath);
+        await createFile(envPath);
+        await createFile(configPath, JSON.stringify(defaultConfig, null, 2));
+        const newTdxConfigs = await readJsonFromFile(configPath);
+
+        commandHandler.setTdxConfig(newTdxConfigs[alias]);
         await commandHandler.signin(argumentSecret);
 
         setEnv({key: TDX_CURRENT_ALIAS, value: aliasToEnv(alias), envPath});
         // Store the argument secret
-        if (argumentSecret.id) setEnv({key: getSecretAliasName(alias), value: jsonToBase64(argumentSecret), envPath});
+        if (argumentSecret.id) {
+          setEnv({key: getSecretAliasName(alias), value: jsonToBase64(argumentSecret), envPath});
+        }
         setEnv({key: getTokenAliasName(alias), value: commandHandler.getToken(), envPath});
         output = "OK";
         break;
@@ -113,7 +135,11 @@ async function run(commandName, commandProps) {
         setEnv({key: getSecretAliasName(alias), value: "", envPath});
         break;
       case "info":
-        output = await commandHandler.getInfo({id, type});
+        output = await commandHandler.getInfo({
+          id,
+          type,
+          tdxConfig: tdxConfigs[alias] || {},
+        });
         break;
       case "config":
         output = tdxConfigs[alias] || {};
@@ -131,10 +157,10 @@ async function run(commandName, commandProps) {
         output = JSON.stringify(output, null, 2);
         break;
       case "download":
-        await commandHandler.download(id, filepath);
+        await commandHandler.download(resourceId, filepath);
         break;
       case "upload":
-        output = await commandHandler.upload(id, filepath);
+        output = await commandHandler.upload(resourceId, filepath);
         break;
       case "copyalias":
         await copyAliasConfig({tdxConfigs, alias, copyAliasName: aliasName, configPath});
@@ -146,7 +172,9 @@ async function run(commandName, commandProps) {
         output = "OK";
         break;
       case "removealias":
-        if (alias === aliasName) throw Error("Can't remove the running alias.");
+        if (alias === aliasName) {
+          throw Error(`Can't remove the running alias=${alias}.`);
+        }
         await removeAliasConfig({tdxConfigs, aliasName, configPath});
         output = "OK";
         break;
@@ -155,6 +183,10 @@ async function run(commandName, commandProps) {
         break;
       case "token":
         output = await commandHandler.runTokenCommand(command);
+        break;
+      case "deploy":
+        output = await commandHandler.deploy({id, resourceId, configJson, filepath});
+        output = JSON.stringify(output, null, 2);
         break;
     }
 
@@ -175,14 +207,15 @@ const argv = require("yargs")
   .command("info [type] [id]", "Output current account info", {}, argumentHandler)
   .command("config", "Output tdx config", {}, argumentHandler)
   .command("list [type]", "List all configured aliases or secrets", {}, argumentHandler)
-  .command("runapi <command>", "Run a tdx api command", {}, argumentHandler)
-  .command("download <id> [filepath]", "Download resource", {}, argumentHandler)
-  .command("upload <id> <filepath>", "Upload resource", {}, argumentHandler)
-  .command("copyalias <aliasname>", "Makes a copy of an existing alias configuration", {}, argumentHandler)
-  .command("modifyalias <aliasname> <configjson>", "Modifies an existing alias configuration", {}, argumentHandler)
-  .command("removealias <aliasname>", "Removes an existing alias configuration", {}, argumentHandler)
-  .command("databot <command> <id> [configjson]", "Starts, stops or aborts a databot instance", {}, argumentHandler)
   .command("token <command>", "Get or revoke a token for a give alias", {}, argumentHandler)
+  .command("runapi <command>", "Run a tdx api command", {}, argumentHandler)
+  .command("download <rid> [filepath]", "Download resource", {}, argumentHandler)
+  .command("upload <rid> <filepath>", "Upload resource", {}, argumentHandler)
+  .command("copyalias <name>", "Makes a copy of an existing alias configuration", {}, argumentHandler)
+  .command("modifyalias <name> <config>", "Modifies an existing alias configuration", {}, argumentHandler)
+  .command("removealias <name>", "Removes an existing alias configuration", {}, argumentHandler)
+  .command("databot <command> <id> [config]", "Starts, stops or aborts a databot instance", {}, argumentHandler)
+  .command("deploy <id> <rid> <config> <filepath>", "Deploys a databot stop->upload->start", {}, argumentHandler)
   .demandCommand(1, 1, "You need at least one command to run.")
   .option("a", {
     alias: "alias",
@@ -194,7 +227,14 @@ const argv = require("yargs")
   .option("c", {
     alias: "credentials",
     nargs: 1,
-    describe: "Input credentials in base64",
+    describe: "TDX credentials {id:\"\",secret:\"\"} in base64",
+    type: "string",
+    requiresArg: true,
+  })
+  .option("t", {
+    alias: "tdx-configs",
+    nargs: 1,
+    describe: "The path to the TDX config file",
     type: "string",
     requiresArg: true,
   })

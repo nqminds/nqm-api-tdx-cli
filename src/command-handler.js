@@ -8,7 +8,7 @@ const {getInfo} = require("./info");
 const {runDatabotCommand} = require("./databot");
 const {getAliasesArray} = require("./alias");
 const {getSecretAliasName} = require("./utils");
-
+const {deploy} = require("./deploy");
 
 class CommandHandler {
   constructor({tdxConfig, secret, token, timeout}) {
@@ -21,6 +21,11 @@ class CommandHandler {
 
   getToken() {
     return this.accessToken;
+  }
+
+  setTdxConfig({tokenHref = {}, config = {}}) {
+    this.tokenHref = tokenHref;
+    this.config = config;
   }
 
   async connect() {
@@ -69,9 +74,9 @@ class CommandHandler {
     return runApi({command, apiArgs, apiArgsStringify, api});
   }
 
-  async getInfo({id, type}) {
+  async getInfo({id, type, tdxConfig}) {
     const api = await this.connect();
-    return getInfo({api, type, id});
+    return getInfo({api, type, id, tdxConfig});
   }
 
   async download(id, filepath) {
@@ -115,6 +120,11 @@ class CommandHandler {
       default:
         throw Error("Wrong input list type");
     }
+  }
+
+  async deploy({id, resourceId, configJson, filepath}) {
+    const api = await this.connect();
+    return deploy({id, resourceId, configJson, filepath, api});
   }
 }
 

@@ -6,6 +6,15 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2020-02-17
+
+### Changed
+ - Added databot deploy command.
+ - Added shortening of the command line arguments.
+ - Added get app url command.
+ 
+### Fixed
+
 ## [0.2.8] - 2020-02-11
 
 ### Changed

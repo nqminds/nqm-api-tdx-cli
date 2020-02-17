@@ -6,6 +6,7 @@
       "ddpServer": "https://ddp.nqminds.com",
       "queryServer": "https://q.nqminds.com",
       "tdxServer": "https://tdx.nqminds.com",
+      "databotServer": "http://databot.nqminds.com",
       "accessTokenTTL": 31622400
     }
   },
@@ -16,6 +17,7 @@
       "ddpServer": "https://ddp.nq-m.com",
       "queryServer": "https://q.nq-m.com",
       "tdxServer": "https://tdx.nq-m.com",
+      "databotServer": "http://databot.nq-m.com",
       "accessTokenTTL": 31622400
     }
   }

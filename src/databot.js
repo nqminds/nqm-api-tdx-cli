@@ -1,27 +1,15 @@
 const nqmUtils = require("@nqminds/nqm-core-utils");
 const {readJsonFromFile} = require("./utils");
 
-function abortDatabot(api, id) {
-  return api.abortDatabotInstance(id);
-}
-
-function stopDatabot(api, id) {
-  return api.stopDatabotInstance(id, nqmUtils.constants.stopDatabotInstance);
-}
-
-function startDatabot({api, id, functionPayload}) {
-  return api.startDatabotInstance(id, functionPayload);
-}
-
 async function runDatabotCommand({api, command, id, configJson}) {
   switch (command) {
     case "start":
       const functionPayload = await readJsonFromFile(configJson);
-      return startDatabot({api, id, functionPayload});
+      return api.startDatabotInstance(id, functionPayload);
     case "stop":
-      return stopDatabot(api, id);
+      return api.stopDatabotInstance(id, nqmUtils.constants.stopDatabotInstance);
     case "abort":
-      return abortDatabot(api, id);
+      return api.abortDatabotInstance(id);
     default:
       throw Error("Unknown databot command.");
   }

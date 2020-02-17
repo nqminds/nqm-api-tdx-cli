@@ -20,7 +20,14 @@ async function getDatabotsIds(api) {
   return JSON.stringify(result, 0, 2);
 }
 
-async function getInfo({api, id = "", type = ""}) {
+async function getAppUrl({api, id, tdxConfig}) {
+  const instance = await api.getDatabotInstance(id);
+  const urlProtocol = tdxConfig.config.tdxServer.split(":")[0];
+  const urlComponents = tdxConfig.config.tdxServer.split(".");
+  return `${urlProtocol}://${instance.subDomain}.${urlComponents.slice(1).join(".")}`;
+}
+
+async function getInfo({api, id = "", type = "", tdxConfig}) {
   switch (type) {
     case "":
     case "account":
@@ -29,6 +36,8 @@ async function getInfo({api, id = "", type = ""}) {
       return getServerFolderId(id);
     case "databotsid":
       return getDatabotsIds(api);
+    case "appurl":
+      return getAppUrl({api, id, tdxConfig});
     default:
       throw Error("Unknow info type term.")
   }
