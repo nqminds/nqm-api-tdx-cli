@@ -116,7 +116,7 @@ async function run(commandName, commandProps) {
         await mkdir(tdxcliConfigPath);
         await createFile(envPath);
         await createFile(configPath, JSON.stringify(defaultConfig, null, 2));
-        const newTdxConfigs = await readJsonFromFile(configPath);
+        const newTdxConfigs = await readJsonFromFile((commandlineConfigPath) ? commandlineConfigPath : configPath);
 
         commandHandler.setTdxConfig(newTdxConfigs[alias]);
         await commandHandler.signin(argumentSecret);
