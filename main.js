@@ -36,6 +36,14 @@ const configPath = path.join(tdxcliConfigPath, appConfig.configFilename);
 
 require("dotenv").config({path: envPath});
 
+function printOutput(jsonOutput, output) {
+  let result = output;
+  if (jsonOutput) {
+    result = JSON.stringify({output}, null, 2);
+  }
+  console.log(result);
+}
+
 async function getConfigs(commandlineConfigPath, configPath) {
   if (commandlineConfigPath) {
     return readJsonFromFile(commandlineConfigPath);
@@ -52,6 +60,7 @@ async function getConfigs(commandlineConfigPath, configPath) {
 async function argumentHandler(argv) {
   const command = argv._[0];
   const commandProps = {
+    jsonOutput: argv.json,
     alias: numberToString(argv.alias || ""),
     id: numberToString(argv.id || ""),
     secret: numberToString(argv.secret || ""),
@@ -74,7 +83,7 @@ async function run(commandName, commandProps) {
   let alias = commandProps.alias;
   let credentials = commandProps.credentials;
   const {
-    id, secret, type, command, filepath, commandlineConfigPath,
+    id, secret, type, command, filepath, commandlineConfigPath, jsonOutput,
     aliasName, configJson, apiArgs, apiArgsStringify, resourceId,
   } = commandProps;
 
@@ -87,7 +96,7 @@ async function run(commandName, commandProps) {
     }
 
     const tdxConfigs = await getConfigs(commandlineConfigPath, configPath);
-    if (!(alias in tdxConfigs) && (!["signin", "modifyalias"].includes(commandName))) {
+    if (!(alias in tdxConfigs) && (!["signin", "modifyalias", "list"].includes(commandName))) {
       throw Error(`No configuration found for alias=${alias}`);
     }
 
@@ -127,7 +136,7 @@ async function run(commandName, commandProps) {
           setEnv({key: getSecretAliasName(alias), value: jsonToBase64(argumentSecret), envPath});
         }
         setEnv({key: getTokenAliasName(alias), value: commandHandler.getToken(), envPath});
-        output = "OK";
+        output = commandHandler.getToken();
         break;
       case "signout":
         await commandHandler.signout();
@@ -147,14 +156,12 @@ async function run(commandName, commandProps) {
       case "list":
         output = await commandHandler.getList({
           type,
-          alias,
           tdxConfigs,
           env: process.env,
         });
         break;
       case "runapi":
         output = await commandHandler.runApi({command, apiArgs, apiArgsStringify});
-        output = JSON.stringify(output, null, 2);
         break;
       case "download":
         await commandHandler.download(resourceId, filepath);
@@ -163,20 +170,17 @@ async function run(commandName, commandProps) {
         output = await commandHandler.upload(resourceId, filepath);
         break;
       case "copyalias":
-        await copyAliasConfig({tdxConfigs, alias, copyAliasName: aliasName, configPath});
-        output = "OK";
+        output = await copyAliasConfig({tdxConfigs, alias, copyAliasName: aliasName, configPath});
         break;
       case "modifyalias":
         const aliasConfig = await readJsonFromFile(configJson);
-        await modifyAliasConfig({tdxConfigs, aliasName, aliasConfig, configPath});
-        output = "OK";
+        output = await modifyAliasConfig({tdxConfigs, aliasName, aliasConfig, configPath});
         break;
       case "removealias":
         if (alias === aliasName) {
           throw Error(`Can't remove the running alias=${alias}.`);
         }
-        await removeAliasConfig({tdxConfigs, aliasName, configPath});
-        output = "OK";
+        output = await removeAliasConfig({tdxConfigs, aliasName, configPath});
         break;
       case "databot":
         output = await commandHandler.runDatabotCommand({command, id, configJson});
@@ -186,11 +190,12 @@ async function run(commandName, commandProps) {
         break;
       case "deploy":
         output = await commandHandler.deploy({id, resourceId, configJson, filepath});
-        output = JSON.stringify(output, null, 2);
         break;
     }
 
-    if (output) console.log(output);
+    if (output) {
+      printOutput(jsonOutput, output);
+    }
   } catch (error) {
     console.error(error);
     process.exit(-1);
@@ -237,6 +242,11 @@ const argv = require("yargs")
     describe: "The path to the TDX config file",
     type: "string",
     requiresArg: true,
+  })
+  .option("j", {
+    alias: "json",
+    describe: "Output as json",
+    type: "boolean",
   })
   .help("h")
   .alias("h", "help")

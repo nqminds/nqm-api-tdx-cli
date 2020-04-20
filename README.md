@@ -29,28 +29,29 @@ The client app can be accessed by running the command ```tdxcli```.
 
 ## Usage
 ```bash
-Usage: tdxcli <command> [options]
+Usage: main.js <command> [options]
 
 Commands:
-  tdxcli signin [id] [secret]                   Sign in to tdx
-  tdxcli signout                                Sign out of tdx
-  tdxcli info [type] [id]                       Output current account info
-  tdxcli config                                 Output tdx config
-  tdxcli list [type]                            List all configured aliases or secrets
-  tdxcli token <command>                        Get or revoke a token for a give alias
-  tdxcli runapi <command>                       Run a tdx api command
-  tdxcli download <rid> [filepath]              Download resource
-  tdxcli upload <rid> <filepath>                Upload resource
-  tdxcli copyalias <name>                       Makes a copy of an existing alias configuration
-  tdxcli modifyalias <name> <config>            Modifies an existing alias configuration
-  tdxcli removealias <name>                     Removes an existing alias configuration
-  tdxcli databot <command> <id> [config]        Starts, stops or aborts a databot instance
-  tdxcli deploy <id> <rid> <config> <filepath>  Deploys a databot stop->upload->start
+  main.js signin [id] [secret]                   Sign in to tdx
+  main.js signout                                Sign out of tdx
+  main.js info [type] [id]                       Output current account info
+  main.js config                                 Output tdx config
+  main.js list [type]                            List all configured aliases or secrets
+  main.js token <command>                        Get or revoke a token for a give alias
+  main.js runapi <command>                       Run a tdx api command
+  main.js download <rid> [filepath]              Download resource
+  main.js upload <rid> <filepath>                Upload resource
+  main.js copyalias <name>                       Makes a copy of an existing alias configuration
+  main.js modifyalias <name> <config>            Modifies an existing alias configuration
+  main.js removealias <name>                     Removes an existing alias configuration
+  main.js databot <command> <id> [config]        Starts, stops or aborts a databot instance
+  main.js deploy <id> <rid> <config> <filepath>  Deploys a databot stop->upload->start
 
 Options:
   -a, --alias        Alias name                                                               [string]
   -c, --credentials  TDX credentials {id:"",secret:""} in base64                              [string]
   -t, --tdx-configs  The path to the TDX config file                                          [string]
+  -j, --json         Output as json                                                          [boolean]
   -h, --help         Show help                                                               [boolean]
   -v, --version      Show version number                                                     [boolean]
 ```
@@ -74,7 +75,7 @@ To get a credentials in base64 the user can sign in and retrieve the credentials
 tdxcli signin id secret --alias=name
 tdxcli list credentials
 ```
-The output of the last command will show the credentials under the alias name ```name```.
+The output of the last command will show the stored credentials.
 
 ### Tdx config file
 One can also pass a custom tdx config file with param ```--tdx-config``` as follows:
@@ -110,6 +111,12 @@ The config file contains the tdx configuration for each defined alias as follows
 }
 ```
 In the above example there are two defined aliases ```nqminds``` and ```nq-m```.
+
+### Command outpout
+To output the result of the command in a standardised json format use ```tdxcli``` with ```-j``` options as follows:
+```bash
+tdxcli -j commandtoexecute ...variousparams
+```
 
 ### ```signin```
 Usage

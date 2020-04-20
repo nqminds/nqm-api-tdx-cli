@@ -104,12 +104,12 @@ class CommandHandler {
     }
   }
 
-  async getList({alias, type, tdxConfigs, env}) {
+  async getList({type, tdxConfigs, env}) {
     const aliases = getAliasesArray(tdxConfigs);
     switch (type) {
       case "":
       case "aliases":
-        return {default: alias, aliases};
+        return aliases;
       case "secrets":
         return aliases.reduce(
           (result, alias) => {

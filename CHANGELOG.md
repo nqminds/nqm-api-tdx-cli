@@ -6,6 +6,14 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2020-04-20
+
+### Changed
+ - Added unified json output with the option ```-j```
+
+### Fixed
+ - Make list command not require an input alias
+
 ## [1.0.1] - 2020-03-19
 
 ### Changed

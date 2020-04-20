@@ -28,7 +28,8 @@ async function copyAliasConfig({tdxConfigs, alias, copyAliasName, configPath}) {
 
 async function modifyAliasConfig({tdxConfigs, aliasName, aliasConfig, configPath}) {
   tdxConfigs[aliasName] = aliasConfig;
-  return writeJsonToFile(tdxConfigs, configPath);
+  await writeJsonToFile(tdxConfigs, configPath);
+  return tdxConfigs[aliasName];
 }
 
 async function removeAliasConfig({tdxConfigs, aliasName, configPath}) {
@@ -37,7 +38,8 @@ async function removeAliasConfig({tdxConfigs, aliasName, configPath}) {
   }
 
   delete tdxConfigs[aliasName];
-  return writeJsonToFile(tdxConfigs, configPath);
+  await writeJsonToFile(tdxConfigs, configPath);
+  return aliasName;
 }
 
 module.exports = {
