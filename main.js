@@ -88,8 +88,13 @@ async function run(commandName, commandProps) {
   } = commandProps;
 
   try {
-    if (alias === "") alias = envToAlias(process.env[TDX_CURRENT_ALIAS] || "");
-    if (credentials === "") credentials = process.env[TDX_CREDENTIALS] || "";
+    if (alias === "") {
+      alias = envToAlias(process.env[TDX_CURRENT_ALIAS] || "");
+    }
+
+    if (credentials === "") {
+      credentials = process.env[TDX_CREDENTIALS] || "";
+    }
 
     if (commandName !== "list" && !checkValidAlias(alias)) {
       throw Error("No alias or wrong alias name. Only allowed [a-zA-Z0-9_]");
