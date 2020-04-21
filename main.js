@@ -156,6 +156,7 @@ async function run(commandName, commandProps) {
       case "list":
         output = await commandHandler.getList({
           type,
+          alias: commandProps.alias,
           tdxConfigs,
           env: process.env,
         });

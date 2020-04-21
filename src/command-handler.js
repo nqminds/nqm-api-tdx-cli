@@ -104,19 +104,25 @@ class CommandHandler {
     }
   }
 
-  async getList({type, tdxConfigs, env}) {
+  async getList({type, alias, tdxConfigs, env}) {
     const aliases = getAliasesArray(tdxConfigs);
+    const aliasIdx = aliases.indexOf(alias)
+    if (alias && aliasIdx < 0) {
+      throw Error("Unknown alias name");
+    }
+
     switch (type) {
       case "":
       case "aliases":
-        return aliases;
+        return (alias) ? aliases[aliasIdx] : aliases;
       case "secrets":
-        return aliases.reduce(
-          (result, alias) => {
-            result[alias] = env[getSecretAliasName(alias)] || "";
+        const secrets = aliases.reduce(
+          (result, aliasName) => {
+            result[aliasName] = env[getSecretAliasName(aliasName)] || "";
             return result;
           }, {}
         );
+        return (alias) ? secrets[alias] : secrets;
       default:
         throw Error("Wrong input list type");
     }

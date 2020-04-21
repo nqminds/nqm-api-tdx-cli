@@ -185,7 +185,10 @@ Outputs the current tdx config for the default or a given alias name ```name```.
 Usage
 ```bash
 tdxcli list aliases
+tdxcli list aliases --alias=name
 tdxcli list secrets
+tdxcli list secrets --alias=name
+
 ```
 The first command lists all configured aliases. The second command lists all secrets in base64 for each configured alias.
 
