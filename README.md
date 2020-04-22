@@ -29,10 +29,10 @@ The client app can be accessed by running the command ```tdxcli-node```.
 
 ### Binary packages
 The tool is also packaged as a standalone binary package for Linux (Ubuntu/Debian), Windows and Mac OS X. The packages can be downloaded from the github repo Release.
-[1] ```tdxcli``` - Linux executable
-[2] ```tdxcli-macos``` - Mac OS X executable
-[3] ```tdxcli.exe``` - Windows executable
-[4] ```tdxcli_*.*-*.deb``` - Ubuntu/Debian installation package. After instalation the tool can be accessed by running the command ```tdxcli```.
+* ```tdxcli``` - Linux executable
+* ```tdxcli-macos``` - Mac OS X executable
+* ```tdxcli.exe``` - Windows executable
+* ```tdxcli_*.*-*.deb``` - Ubuntu/Debian installation package. After instalation the tool can be accessed by running the command ```tdxcli```.
 
 ## Usage
 ```bash
