@@ -11,12 +11,13 @@ const {getSecretAliasName} = require("./utils");
 const {deploy} = require("./deploy");
 
 class CommandHandler {
-  constructor({tdxConfig, secret, token, timeout}) {
+  constructor({tdxConfig, secret, token, timeout, puppeteerPackage}) {
     this.tokenHref = tdxConfig.tokenHref || "";
     this.config = tdxConfig.config || {};
     this.timeout = timeout || 5000;
     this.secret = secret || {};
     this.accessToken = token || "";
+    this.puppeteerPackage = puppeteerPackage;
   }
 
   getToken() {
@@ -50,7 +51,11 @@ class CommandHandler {
   }
 
   async webSignin() {
-    const api = await webWindowSignin(this.config, this.tokenHref);
+    const api = await webWindowSignin({
+      config: this.config,
+      tokenHref: this.tokenHref,
+      puppeteerPackage: this.puppeteerPackage,
+    });
     return api;
   }
 
@@ -60,6 +65,7 @@ class CommandHandler {
       tokenHref: this.tokenHref,
       timeout: this.timeout,
       secret,
+      puppeteerPackage: this.puppeteerPackage,
     });
     return api;
   }

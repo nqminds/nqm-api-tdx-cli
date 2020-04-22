@@ -106,7 +106,12 @@ async function run(commandName, commandProps) {
     }
 
     const argumentSecret = {id, secret};
-    const configArgs = {tdxConfig: tdxConfigs[alias] || {}, timeout: appConfig.scraperTimeout};
+    const configArgs = {
+      tdxConfig: tdxConfigs[alias] || {},
+      timeout: appConfig.scraperTimeout,
+      puppeteerPackage: appConfig.puppeteerPackage || "puppeteer",
+    };
+
     let commandHandler;
 
     if (commandName !== "signin" && credentials) {

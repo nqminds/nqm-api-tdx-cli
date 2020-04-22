@@ -2,5 +2,6 @@
   "scraperTimeout": 5000,
   "tdxcliFoldername": ".tdxcli",
   "envFilename": ".env",
-  "configFilename": "config.json"
+  "configFilename": "config.json",
+  "puppeteerPackage": "puppeteer"
 }

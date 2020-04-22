@@ -1,12 +1,22 @@
 "use strict";
 
-const puppeteer = require("puppeteer");
 const url = require("url");
 const querystring = require("querystring");
+const locateChrome = require("locate-chrome");
 
-async function startScraper(tokenHref, headless = false) {
+async function startScraper({tokenHref, headless = false, puppeteerPackage}) {
+  const puppeteer = require(puppeteerPackage);
   const originHost = url.parse(tokenHref).host;
-  const browser = await puppeteer.launch({headless});
+  let browser;
+
+  if (puppeteerPackage === "puppeteer") {
+    browser = await puppeteer.launch({headless});
+  } else {
+    const chromePath = await locateChrome();
+    browser = await puppeteer.launch({headless, executablePath: chromePath});
+  }
+
+
   const page = await browser.newPage();
 
   await page.setRequestInterception(true);
@@ -57,8 +67,12 @@ async function registerRequestHandler({resolve, reject, tokenHref, page, browser
   }
 }
 
-async function getBrowserToken(tokenHref) {
-  const {originHost, browser, page} = await startScraper(tokenHref, false);
+async function getBrowserToken(tokenHref, puppeteerPackage) {
+  const {originHost, browser, page} = await startScraper({
+    tokenHref,
+    headless: false,
+    puppeteerPackage,
+  });
   const token = await new Promise(async(resolve, reject) => registerRequestHandler({
     resolve, reject, tokenHref, page, browser, originHost,
   }));
@@ -66,8 +80,12 @@ async function getBrowserToken(tokenHref) {
   return token;
 }
 
-async function getSecretToken({tokenHref, secret, timeout}) {
-  const {originHost, browser, page} = await startScraper(tokenHref, true);
+async function getSecretToken({tokenHref, secret, timeout, puppeteerPackage}) {
+  const {originHost, browser, page} = await startScraper({
+    tokenHref,
+    headless: true,
+    puppeteerPackage,
+  });
   const token = await new Promise(async(resolve, reject) => {
     await registerRequestHandler({resolve, reject, tokenHref, page, browser, originHost});
     await submitSecret({page, secret, timeout, reject});

@@ -25,27 +25,34 @@ The best use of tdxcli tool is to install it with npm globally as follows:
 ```bash
 npm i -g @nqminds/nqm-tdx-terminal-cli
 ```
-The client app can be accessed by running the command ```tdxcli```.
+The client app can be accessed by running the command ```tdxcli-node```.
+
+### Binary packages
+The tool is also packaged as a standalone binary package for Linux (Ubuntu/Debian), Windows and Mac OS X. The packages can be downloaded from the github repo Release.
+[1] ```tdxcli``` - Linux executable
+[2] ```tdxcli-macos``` - Mac OS X executable
+[3] ```tdxcli.exe``` - Windows executable
+[4] ```tdxcli_*.*-*.deb``` - Ubuntu/Debian installation package. After instalation the tool can be accessed by running the command ```tdxcli```.
 
 ## Usage
 ```bash
-Usage: main.js <command> [options]
+Usage: tdxcli-node <command> [options]
 
 Commands:
-  main.js signin [id] [secret]                   Sign in to tdx
-  main.js signout                                Sign out of tdx
-  main.js info [type] [id]                       Output current account info
-  main.js config                                 Output tdx config
-  main.js list [type]                            List all configured aliases or secrets
-  main.js token <command>                        Get or revoke a token for a give alias
-  main.js runapi <command>                       Run a tdx api command
-  main.js download <rid> [filepath]              Download resource
-  main.js upload <rid> <filepath>                Upload resource
-  main.js copyalias <name>                       Makes a copy of an existing alias configuration
-  main.js modifyalias <name> <config>            Modifies an existing alias configuration
-  main.js removealias <name>                     Removes an existing alias configuration
-  main.js databot <command> <id> [config]        Starts, stops or aborts a databot instance
-  main.js deploy <id> <rid> <config> <filepath>  Deploys a databot stop->upload->start
+  tdxcli-node signin [id] [secret]                   Sign in to tdx
+  tdxcli-node signout                                Sign out of tdx
+  tdxcli-node info [type] [id]                       Output current account info
+  tdxcli-node config                                 Output tdx config
+  tdxcli-node list [type]                            List all configured aliases or secrets
+  tdxcli-node token <command>                        Get or revoke a token for a give alias
+  tdxcli-node runapi <command>                       Run a tdx api command
+  tdxcli-node download <rid> [filepath]              Download resource
+  tdxcli-node upload <rid> <filepath>                Upload resource
+  tdxcli-node copyalias <name>                       Makes a copy of an existing alias configuration
+  tdxcli-node modifyalias <name> <config>            Modifies an existing alias configuration
+  tdxcli-node removealias <name>                     Removes an existing alias configuration
+  tdxcli-node databot <command> <id> [config]        Starts, stops or aborts a databot instance
+  tdxcli-node deploy <id> <rid> <config> <filepath>  Deploys a databot stop->upload->start
 
 Options:
   -a, --alias        Alias name                                                               [string]
