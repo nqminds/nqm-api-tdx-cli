@@ -6,6 +6,14 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2020-04-22
+
+### Changed
+ - Added dual use of puppeteer
+
+### Fixed
+
+
 ## [1.0.3] - 2020-04-21
 
 ### Changed

@@ -1,6 +1,6 @@
 {
   "name": "@nqminds/nqm-tdx-terminal-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Command-line interface for accessing the TDX API",
   "main": "main.js",
   "directories": {
