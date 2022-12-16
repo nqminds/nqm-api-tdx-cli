@@ -44,12 +44,12 @@ function printOutput(jsonOutput, output) {
   console.log(result);
 }
 
-async function getConfigs(commandlineConfigPath, configPath) {
+async function getConfigs(commandlineConfigPath, defaultConfigPath) {
   if (commandlineConfigPath) {
     return readJsonFromFile(commandlineConfigPath);
   } else {
     try {
-      const output = await readJsonFromFile(configPath);
+      const output = await readJsonFromFile(defaultConfigPath);
       return output;
     } catch (error) {
       return {};
