@@ -18,7 +18,6 @@
   "dependencies": {
     "@nqminds/nqm-api-tdx": "^0.9.1",
     "@nqminds/nqm-core-utils": "^0.5.9",
-    "@nqminds/nqm-databot-utils": "^0.2.20",
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
     "locate-chrome": "^0.1.1",
