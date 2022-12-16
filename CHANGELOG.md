@@ -8,6 +8,8 @@ and this project adheres to
 
 ## Unreleased
 
+## [2.0.0] - 2022-12-16
+
 ### Changed
 
 - **BREAKING CHANGE**: The minimum supported version of Node is now Node.JS 16.
