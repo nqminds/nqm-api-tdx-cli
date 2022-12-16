@@ -1,11 +1,8 @@
 /* eslint-disable no-useless-escape */
 const fs = require("fs");
 const dotenv = require("dotenv");
-const util = require("util");
 const {TDX_TOKEN, TDX_SECRET} = require("./constants");
-const writeFile = util.promisify(fs.writeFile);
-const readFile = util.promisify(fs.readFile);
-const mkdirAsync = util.promisify(fs.mkdir);
+const {writeFile, readFile, mkdir: mkdirAsync} = require("node:fs/promises");
 
 function validateEmail(email) {
   // eslint-disable-next-line max-len
@@ -141,17 +138,8 @@ function numberToString(value) {
   else return value;
 }
 
-function createFile(filepath, content = "") {
-  return new Promise((resolve, reject) => {
-    fs.open(filepath, "r", (err) => {
-      if (err) {
-        fs.writeFile(filepath, content, (err) => {
-          if (err) reject(err);
-          else resolve();
-        });
-      } else resolve();
-    });
-  });
+async function createFile(filepath, content = "") {
+  await writeFile(filepath, content, {encoding: "utf8"});
 }
 
 async function mkdir(path) {

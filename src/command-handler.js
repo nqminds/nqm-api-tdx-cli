@@ -112,7 +112,7 @@ class CommandHandler {
 
   async getList({type, alias, tdxConfigs, env}) {
     const aliases = getAliasesArray(tdxConfigs);
-    const aliasIdx = aliases.indexOf(alias)
+    const aliasIdx = aliases.indexOf(alias);
     if (alias && aliasIdx < 0) {
       throw Error("Unknown alias name");
     }
@@ -126,7 +126,7 @@ class CommandHandler {
           (result, aliasName) => {
             result[aliasName] = env[getSecretAliasName(aliasName)] || "";
             return result;
-          }, {}
+          }, {},
         );
         return (alias) ? secrets[alias] : secrets;
       default:

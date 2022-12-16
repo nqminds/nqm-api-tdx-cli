@@ -8,7 +8,7 @@ function getAccountInfo(api) {
 
 function getServerFolderId(id) {
   return nqmUtils.shortHash(
-    nqmUtils.constants.applicationServerDataFolderPrefix + id
+    nqmUtils.constants.applicationServerDataFolderPrefix + id,
   );
 }
 
@@ -39,7 +39,7 @@ async function getInfo({api, id = "", type = "", tdxConfig}) {
     case "appurl":
       return getAppUrl({api, id, tdxConfig});
     default:
-      throw Error("Unknow info type term.")
+      throw Error("Unknow info type term.");
   }
 }
 

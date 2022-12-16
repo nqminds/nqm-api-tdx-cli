@@ -73,9 +73,11 @@ async function getBrowserToken(tokenHref, puppeteerPackage) {
     headless: false,
     puppeteerPackage,
   });
-  const token = await new Promise(async(resolve, reject) => registerRequestHandler({
-    resolve, reject, tokenHref, page, browser, originHost,
-  }));
+  const token = await new Promise((resolve, reject) => {
+    registerRequestHandler({
+      resolve, reject, tokenHref, page, browser, originHost,
+    });
+  });
   await browser.close();
   return token;
 }
@@ -86,7 +88,7 @@ async function getSecretToken({tokenHref, secret, timeout, puppeteerPackage}) {
     headless: true,
     puppeteerPackage,
   });
-  const token = await new Promise(async(resolve, reject) => {
+  const token = await new Promise(async(resolve, reject) => { // eslint-disable-line no-async-promise-executor
     await registerRequestHandler({resolve, reject, tokenHref, page, browser, originHost});
     await submitSecret({page, secret, timeout, reject});
   });

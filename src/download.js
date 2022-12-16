@@ -14,7 +14,7 @@ async function downloadToFile(resourceStream, filepath) {
 
 async function downloadResource({id, filepath, api}) {
   const resourceStream = await getResourceStream(id, api);
-  if (filepath) return downloadToFile(resourceStream, filepath);
+  if (filepath) await downloadToFile(resourceStream, filepath);
   else resourceStream.pipe(process.stdout);
 }
 
