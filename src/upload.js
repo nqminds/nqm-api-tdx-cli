@@ -1,7 +1,7 @@
 const fs = require("fs");
+const {stat} = require("node:fs/promises");
 const request = require("request");
 const path = require("path");
-const databotUtils = require("@nqminds/nqm-databot-utils");
 const {getInfo} = require("./info");
 
 async function getUsername(api) {
@@ -20,10 +20,10 @@ async function verifyResource(api, id) {
   } else return output;
 }
 
-function getFileStream(filepath) {
+async function getFileStream(filepath) {
   const resourceStream = fs.createReadStream(filepath);
   const filename = path.basename(filepath);
-  const filesize = databotUtils.file.fileSize(filepath);
+  const {size: filesize} = await stat(filepath);
   return {resourceStream, filename, filesize};
 }
 
@@ -80,7 +80,7 @@ async function uploadStream({api, resourceStream, filename, filesize, id}) {
 async function uploadResource({id, filepath, api}) {
   if (filepath) {
     const output = await verifyResource(api, id);
-    const {resourceStream, filename, filesize} = getFileStream(filepath);
+    const {resourceStream, filename, filesize} = await getFileStream(filepath);
     await uploadStream({api, resourceStream, filename, filesize, id});
     return output;
   } else {

@@ -12,6 +12,10 @@ and this project adheres to
 
 - **BREAKING CHANGE**: The minimum supported version of Node is now Node.JS 16.
 
+### Dependencies
+
+- Removed `@nqminds/nqm-databot-utils` as a dependency
+
 ## [1.0.4] - 2020-04-22
 
 ### Changed
