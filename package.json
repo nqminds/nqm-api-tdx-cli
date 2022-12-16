@@ -10,7 +10,7 @@
     "tdxcli-node": "./bin/tdxcli-node"
   },
   "engines": {
-    "node": ">=10.17.0"
+    "node": ">=16.0.0"
   },
   "pkg": {
     "scripts": "node_modules/puppeteer-core/*.js"

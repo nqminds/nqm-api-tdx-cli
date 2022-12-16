@@ -6,6 +6,12 @@ The format is based on
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+
+- **BREAKING CHANGE**: The minimum supported version of Node is now Node.JS 16.
+
 ## [1.0.4] - 2020-04-22
 
 ### Changed
